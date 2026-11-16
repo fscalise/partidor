@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b0f14">
+<title>Partidor</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{
+  --bg:#0b0f14; --panel:#121820; --edge:#1f2a36; --txt:#c9d4e0; --lbl:#8494a6; --dim:#5d6b7a; --run:#4d6878;
+  --amb:#ffb020; --grn:#2ee66b; --red:#ff6b6b; --cyan:#5cd6ff; --hi:#e8eef5;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--txt);height:100%;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;touch-action:manipulation}
+body{-webkit-user-select:none;user-select:none}
+button{font-family:inherit}
+.mono{font-family:ui-monospace,"Roboto Mono","DejaVu Sans Mono",Consolas,monospace;font-variant-numeric:tabular-nums}
+.lbl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--lbl)}
+.panel{background:var(--panel);border:1px solid var(--edge);border-radius:16px}
+.hidden{display:none!important}
+
+/* ---------- Pantallas ---------- */
+.view{display:none;flex-direction:column;gap:10px;height:100vh;height:100dvh;max-width:1000px;margin:0 auto;
+  padding:12px 14px calc(14px + env(safe-area-inset-bottom))}
+.view.on{display:flex}
+.view.scroll{overflow-y:auto;height:auto;min-height:100dvh}
+
+/* ---------- Cabecera ---------- */
+.hdr{display:flex;align-items:center;gap:8px;flex:none}
+.ib{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:12px;
+  background:var(--panel);border:1px solid var(--edge);color:var(--txt);padding:0}
+.ib:active{background:#223040}
+.title{flex:1;min-width:0;font-size:13px;font-weight:600;letter-spacing:.1em;line-height:1.15;color:#9fb3c8}
+.title.big{font-size:16px;letter-spacing:.25em}
+.chip{display:flex;align-items:center;gap:7px;height:44px;flex:none;padding:0 13px;border-radius:999px;
+  background:var(--panel);border:1px solid var(--edge);font-size:16px;font-weight:600}
+.dot{width:13px;height:13px;border-radius:50%;background:#3a4654;flex:none}
+.dot.ok{background:var(--grn);box-shadow:0 0 10px var(--grn)}
+.dot.bad{background:var(--red);box-shadow:0 0 10px var(--red)}
+.dot.demo{background:var(--cyan);box-shadow:0 0 10px var(--cyan)}
+.chip .tDot{margin-left:6px}
+.chip .bTxt.na{color:var(--lbl)}
+
+/* ---------- Inicio ---------- */
+.intro{padding:14px 4px 4px}
+.intro h1{margin:8px 0 0;font-size:28px;font-weight:700;color:var(--hi);line-height:1.2}
+.modeBtn{display:flex;align-items:center;gap:16px;text-align:left;width:100%;border-radius:18px;padding:22px 18px}
+.modeBtn .ic{flex:none}
+.modeBtn b{display:block;font-size:21px}
+.modeBtn small{display:block;font-size:14px;margin-top:4px;line-height:1.35}
+.modeBtn.reac{background:#0f3d22;border:1px solid #1f7a44;color:#d6ffe4}
+.modeBtn.reac .ic{color:var(--grn)} .modeBtn.reac small{color:#a8dcbb}
+.modeBtn.tiempo{background:#13314a;border:1px solid #22557c;color:#dcefff}
+.modeBtn.tiempo .ic{color:var(--cyan)} .modeBtn.tiempo small{color:#a9cde8}
+.modeBtn:active{transform:scale(.98)}
+.modeBtn:disabled{background:var(--panel);border:1px dashed #2a3846;color:#6b7a8b;transform:none}
+.modeBtn:disabled .ic,.modeBtn:disabled small{color:#6b7a8b}
+.modeBtn:disabled .chev{display:none}
+.grow{flex:1}
+.warnTxt{text-align:center;font-size:14px;color:var(--amb)}
+.link{background:none;border:none;color:var(--lbl);font-size:14px;text-decoration:underline;padding:12px;width:100%}
+
+/* ---------- Botones ---------- */
+.btn{background:#1a2430;border:1px solid #2a3846;color:var(--hi);border-radius:12px;font-size:17px;font-weight:600;padding:15px 8px;width:100%}
+.btn:active{transform:scale(.97);background:#223040}
+.btn.blue{background:#13314a;border-color:#22557c;color:#dcefff}
+.btn.red{background:#3a1d1d;border-color:#6b2a2a;color:#ffd6d6}
+.btn.big{font-size:22px;font-weight:700;letter-spacing:.12em;padding:22px 8px;border-radius:16px}
+.btn.sm{font-size:14px;padding:12px 14px;width:auto}
+.go{border-radius:16px;font-size:30px;font-weight:700;letter-spacing:.2em;padding:24px 8px;width:100%;
+  background:#0f3d22;border:1px solid #1f7a44;color:#d6ffe4}
+.go:active{transform:scale(.98)}
+.go.busy{background:#161d26;border-color:#2a3846;color:var(--lbl)}
+.go.wait{background:#3a2c10;border-color:#7a5a1f;color:#ffd98a}
+.go.off{background:#161d26;border-color:#2a3846;color:var(--lbl)}
+
+/* ---------- Pantalla de largada ---------- */
+#mBody{flex:1;min-height:0;display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
+.m-reac #mBody{grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"lamps" "reac" "rec" "btn"}
+.m-tiempo #mBody{grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"lamps" "reac" "cronos" "rec" "btn"}
+.m-reac .a-cronos{display:none!important}
+.a-lamps{grid-area:lamps}.a-reac{grid-area:reac}.a-cronos{grid-area:cronos}.a-rec{grid-area:rec}.a-btn{grid-area:btn}
+
+.lamps{padding:14px 10px 12px}
+.lampRow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;text-align:center}
+.lamp{width:38px;height:38px;border-radius:50%;margin:0 auto 7px;background:#1d2630;box-shadow:inset 0 0 6px #000}
+.lamp.amb{background:var(--amb);box-shadow:0 0 18px var(--amb)}
+.lamp.grn{background:var(--grn);box-shadow:0 0 20px var(--grn)}
+.status{text-align:center;font-size:15px;margin-top:10px;min-height:19px;color:var(--txt)}
+
+.reacP{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px;min-height:0;overflow:hidden}
+.num{font-size:min(26vw,13vh);font-weight:600;line-height:1.05;margin:6px 0 2px;color:var(--cyan);
+  text-shadow:0 0 22px rgba(92,214,255,.35);white-space:nowrap}
+.num.run{color:var(--run);text-shadow:none}
+.num.none{color:var(--dim);text-shadow:none}
+.num.to{color:var(--amb);text-shadow:0 0 18px rgba(255,176,32,.35);font-size:min(15vw,8vh)}
+.unit{font-size:13px;color:var(--lbl)}
+
+.cronos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cronos .panel{text-align:center;padding:12px 6px}
+.cn{font-size:min(10vw,5.5vh);font-weight:600;margin-top:4px;color:var(--hi);white-space:nowrap}
+.cn.run{color:var(--run)} .cn.none{color:var(--dim)}
+
+.recs{font-size:13px;color:var(--lbl);padding:2px 6px}
+.recs .r{display:grid;gap:6px;padding:5px 2px;border-top:1px solid #1a222c}
+.recs .r span{text-align:right}.recs .r span:first-child{text-align:left}
+.recs .h{border-top:none;padding:0 2px 4px;font-family:system-ui,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
+.recs .ttl{display:none}
+.m-reac .recs .r{grid-template-columns:repeat(3,minmax(0,1fr))}
+.m-tiempo .recs .r{grid-template-columns:1.1fr repeat(3,minmax(0,1fr))}
+.recs .empty{padding:6px 2px;font-family:system-ui,sans-serif}
+
+/* Horizontal: dos mitades */
+@media (orientation:landscape) and (min-width:560px){
+  #vModo{max-width:none}
+  .m-reac #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:"lamps rec" "reac rec" "reac btn";column-gap:14px}
+  .m-tiempo #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
+    grid-template-areas:"lamps cronos" "reac rec" "reac btn";column-gap:14px}
+  .lamp{width:30px;height:30px}
+  .lamps{padding:10px 10px 8px}
+  .status{margin-top:6px}
+  .num{font-size:min(12vw,24vh)}
+  .num.to{font-size:min(7vw,14vh)}
+  .cn{font-size:min(4.5vw,9vh)}
+  .recs{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:10px 14px;overflow:hidden;min-height:0}
+  .recs .ttl{display:block;margin-bottom:8px}
+  .go{padding:16px 8px;font-size:26px}
+}
+
+/* ---------- Configuración ---------- */
+.sec{padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.step{display:flex;align-items:center;gap:6px;margin-top:4px}
+.step .btn{width:48px;height:48px;padding:0;font-size:26px;flex:none}
+.step .val{flex:1;text-align:center;font-size:32px;font-weight:600;color:var(--amb)}
+.hint{font-size:12px;color:var(--lbl);text-align:center;line-height:1.35}
+.info .row{display:flex;padding:9px 0;border-top:1px solid var(--edge);font-size:15px}
+.info .row span:first-child{flex:1;color:var(--lbl)}
+#calMsg{text-align:center;font-size:14px}
+#calMsg:empty{display:none}
+#calMsg.ok{color:var(--grn)} #calMsg.err{color:var(--red)}
+details summary{color:var(--lbl);font-size:12px;letter-spacing:.12em;text-transform:uppercase;padding:4px 0;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
+th{font-weight:500;color:var(--lbl);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-align:right;padding:4px}
+td{text-align:right;padding:5px 4px;border-top:1px solid var(--edge)}
+th:first-child,td:first-child{text-align:left}
+td.c{color:var(--cyan)}
+.tools{display:flex;gap:8px;margin-top:8px}
+.tools .btn{font-size:13px;padding:10px 6px;font-weight:500}
+#log{font-size:11.5px;max-height:220px;overflow:auto;white-space:pre-wrap;margin:8px 0 0;color:#8a9aab;-webkit-user-select:text;user-select:text}
+#log .tx{color:var(--amb)}
+
+/* ---------- Aviso flotante ---------- */
+#toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:12px;
+  background:#1a2430;border:1px solid #2a3846;font-size:14px;text-align:center;z-index:10;opacity:0;pointer-events:none;transition:opacity .2s}
+#toast.show{opacity:1}
+#toast.ok{color:var(--grn)} #toast.warn{color:var(--amb)} #toast.err{color:var(--red)}
+</style>
+</head>
+<body>
+
+<!-- Indicador de batería y Bluetooth (se copia en cada cabecera) -->
+<template id="chipTpl">
+  <div class="chip" aria-label="Batería del sensor y estado del Bluetooth">
+    <span class="dot bDot"></span><span class="mono bTxt na">-.--V</span>
+    <span class="dot tDot"></span><span class="tTxt">BT</span>
+  </div>
+</template>
+
+<!-- ================= INICIO ================= -->
+<div class="view on" id="vInicio">
+  <div class="hdr">
+    <div class="title big">PARTIDOR</div>
+    <div class="chipSlot"></div>
+    <button class="ib" id="btnFull" aria-label="Pantalla completa">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></svg>
+    </button>
+  </div>
+
+  <div class="intro">
+    <div class="lbl">Elegí el modo</div>
+    <h1>¿Cómo vas a usar el partidor?</h1>
+  </div>
+
+  <button class="modeBtn reac" id="mReac" disabled>
+    <svg class="ic" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
+    <span style="flex:1"><b>Partidor (Reacción)</b><small data-on="Advertencia, listo, ya y tiempo de reacción" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
+    <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+
+  <button class="modeBtn tiempo" id="mTiempo" disabled>
+    <svg class="ic" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>
+    <span style="flex:1"><b>Con toma de tiempo</b><small data-on="Reacción más Crono 1 y Crono 2 del control RF" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
+    <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+
+  <div class="grow"></div>
+
+  <div id="iniOff" style="display:flex;flex-direction:column;gap:6px">
+    <div class="warnTxt">Conectá el sensor para elegir el modo</div>
+    <button class="btn big blue" id="btnConectar">CONECTAR SENSOR</button>
+    <button class="link" id="btnDemoIni">Probar en modo demo</button>
+  </div>
+
+  <div id="iniOn" class="panel hidden" style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+    <div style="flex:1">
+      <div class="lbl">Sensor</div>
+      <div id="iniSensor" style="font-size:16px;color:var(--hi);margin-top:2px">APM · conectado</div>
+    </div>
+    <button class="btn sm red" id="btnDescIni">Desconectar</button>
+  </div>
+</div>
+
+<!-- ================= LARGADA (los dos modos) ================= -->
+<div class="view m-reac" id="vModo">
+  <div class="hdr">
+    <button class="ib" id="btnVolver" aria-label="Volver a elegir modo">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+    </button>
+    <div class="title" id="modoTitle">REACCIÓN</div>
+    <div class="chipSlot"></div>
+    <button class="ib" id="btnCfg" aria-label="Configuración">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+    </button>
+  </div>
+
+  <div id="mBody">
+    <div class="panel lamps a-lamps">
+      <div class="lampRow">
+        <div><div class="lamp" id="lAdv"></div><div class="lbl">Advertencia</div></div>
+        <div><div class="lamp" id="lListo"></div><div class="lbl">Listo</div></div>
+        <div><div class="lamp" id="lYa"></div><div class="lbl">Ya</div></div>
+      </div>
+      <div class="status" id="status">Listo para largar</div>
+    </div>
+
+    <div class="panel reacP a-reac">
+      <div class="lbl">Reacción</div>
+      <div class="num mono none" id="reac">-.---</div>
+      <div class="unit" id="reacUnit">segundos</div>
+    </div>
+
+    <div class="cronos a-cronos">
+      <div class="panel"><div class="lbl">Crono 1 · Pin 7</div><div class="cn mono none" id="c1">--.--</div></div>
+      <div class="panel"><div class="lbl">Crono 2 · Pin 6</div><div class="cn mono none" id="c2">--.--</div></div>
+    </div>
+
+    <div class="recs mono a-rec" id="recs"></div>
+
+    <button class="go a-btn off" id="btnGo">SIN CONEXIÓN</button>
+  </div>
+</div>
+
+<!-- ================= CONFIGURACIÓN ================= -->
+<div class="view scroll" id="vConfig">
+  <div class="hdr">
+    <button class="ib" id="btnCfgVolver" aria-label="Volver">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
+    </button>
+    <div class="title" style="font-size:14px;letter-spacing:.2em">CONFIGURACIÓN</div>
+  </div>
+
+  <div class="panel sec">
+    <div class="lbl">Sensor</div>
+    <button class="btn" id="btnCal" style="font-size:18px;padding:16px">CALIBRAR</button>
+    <div id="calMsg"></div>
+  </div>
+
+  <div class="two">
+    <div class="panel sec" style="padding:14px 10px">
+      <div class="lbl" style="text-align:center">Umbral</div>
+      <div class="step">
+        <button class="btn" data-cmd="-" aria-label="Bajar umbral">−</button>
+        <div class="val mono" id="umbral">--</div>
+        <button class="btn" data-cmd="+" aria-label="Subir umbral">+</button>
+      </div>
+      <div class="hint">− más sensible<br>+ menos sensible</div>
+    </div>
+    <div class="panel sec" style="padding:14px 10px">
+      <div class="lbl" style="text-align:center">Advertencia</div>
+      <div class="step">
+        <button class="btn" data-cmd="t" aria-label="Bajar tiempo de advertencia">−</button>
+        <div class="val mono"><span id="adv">--</span><span style="font-size:15px"> s</span></div>
+        <button class="btn" data-cmd="T" aria-label="Subir tiempo de advertencia">+</button>
+      </div>
+      <div class="hint">3 a 20 s<br>hasta el "listo"</div>
+    </div>
+  </div>
+
+  <div class="panel sec info">
+    <div style="display:flex;align-items:center">
+      <div class="lbl" style="flex:1">Info del equipo</div>
+      <button class="btn sm" id="btnInfo">Actualizar</button>
+    </div>
+    <div>
+      <div class="row"><span>Firmware</span><span class="mono" id="iFw" style="font-size:13px">—</span></div>
+      <div class="row"><span>Modo</span><span id="iModo">—</span></div>
+      <div class="row"><span>Batería</span><span class="mono" id="iBat">—</span></div>
+      <div class="row"><span>Pin 5 · inicio RF</span><span id="iP5">—</span></div>
+      <div class="row"><span>Pin 6 · crono 2</span><span id="iP6">—</span></div>
+      <div class="row"><span>Pin 7 · crono 1</span><span id="iP7">—</span></div>
+    </div>
+  </div>
+
+  <div class="panel sec">
+    <div class="lbl">Conexión</div>
+    <div style="display:flex;align-items:center;gap:8px;font-size:16px;color:var(--hi)">
+      <span class="dot" id="cDot"></span><span id="cTxt">Desconectado</span>
+    </div>
+    <div class="two" style="gap:10px">
+      <button class="btn blue" id="cBtn" style="font-size:15px">Conectar</button>
+      <button class="btn" id="btnOtro" style="font-size:15px">Otro equipo</button>
+    </div>
+  </div>
+
+  <button class="btn" id="btnFullCfg">Pantalla completa</button>
+  <button class="btn" id="btnCambiarModo">Cambiar modo</button>
+  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.1 (16/11/2026)</div>
+
+  <div class="panel sec">
+    <details>
+      <summary>Historial completo y registro</summary>
+      <table>
+        <thead><tr><th>Hora</th><th>Espera</th><th>Reacción</th><th>Crono 1</th><th>Crono 2</th></tr></thead>
+        <tbody id="hist"></tbody>
+      </table>
+      <div class="tools">
+        <button class="btn" id="btnCopy">Copiar (CSV)</button>
+        <button class="btn" id="btnClear">Borrar</button>
+        <button class="btn" id="btnDemo">Modo demo</button>
+      </div>
+      <pre class="mono" id="log"></pre>
+    </details>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+'use strict';
+const $ = id => document.getElementById(id);
+const SPP = '00001101-0000-1000-8000-00805f9b34fb';   // Serial Port Profile (HC-06)
+const BAUD = 57600;                                     // igual que BT.begin() del Uno
+const enc = new TextEncoder();
+const BUSY = ['cal', 'adv', 'listo', 'ya'];
+
+let port = null, reader = null, writer = null, reading = false, loopPromise = null;
+let demo = false;
+
+const S = {
+  conn: false, view: 'vInicio', mode: null, phase: 'idle',
+  refrUntil: 0, lastEvt: 0, bat: null, batAlert: false, fw: null
+};
+
+/* ---------------- Navegación ---------------- */
+function show(id){
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === id));
+  S.view = id; window.scrollTo(0, 0); render();
+}
+function openMode(m){
+  S.mode = m;
+  const v = $('vModo');
+  v.classList.toggle('m-reac', m === 'reac');
+  v.classList.toggle('m-tiempo', m === 'tiempo');
+  $('modoTitle').textContent = m === 'reac' ? 'REACCIÓN' : 'TOMA DE TIEMPO';
+  renderRecs(); show('vModo');
+}
+
+/* ---------------- Interfaz ---------------- */
+let toastT = null;
+function toast(t, cls){
+  const el = $('toast');
+  el.textContent = t; el.className = 'show ' + (cls || '');
+  clearTimeout(toastT); toastT = setTimeout(() => el.className = '', cls === 'err' ? 6000 : 3500);
+}
+function log(t, cls){
+  const el = $('log'), line = document.createElement('div');
+  line.textContent = new Date().toTimeString().slice(0, 8) + '  ' + t;
+  if (cls) line.className = cls;
+  el.appendChild(line);
+  while (el.childNodes.length > 300) el.removeChild(el.firstChild);
+  el.scrollTop = el.scrollHeight;
+}
+function render(){
+  // Indicadores de cabecera
+  document.querySelectorAll('.chip').forEach(ch => {
+    const has = S.conn && S.bat != null;
+    ch.querySelector('.bDot').className = 'dot bDot' + (has ? ((S.bat < 7.0 || S.batAlert) ? ' bad' : ' ok') : '');
+    const bt = ch.querySelector('.bTxt');
+    bt.textContent = has ? S.bat.toFixed(2) + 'V' : '-.--V';
+    bt.className = 'mono bTxt' + (has ? '' : ' na');
+    ch.querySelector('.tDot').className = 'dot tDot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
+    ch.querySelector('.tTxt').textContent = demo ? 'DEMO' : 'BT';
+  });
+  // Inicio
+  ['mReac', 'mTiempo'].forEach(id => {
+    const b = $(id), sm = b.querySelector('small');
+    b.disabled = !S.conn;
+    sm.textContent = S.conn ? sm.dataset.on : sm.dataset.off;
+  });
+  $('iniOff').classList.toggle('hidden', S.conn);
+  $('iniOn').classList.toggle('hidden', !S.conn);
+  $('iniSensor').textContent = demo ? 'Modo demo (simulado)' : 'APM · ' + (S.fw || 'conectado');
+  // Configuración
+  $('cDot').className = 'dot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
+  $('cTxt').textContent = demo ? 'Modo demo' : (S.conn ? 'APM · conectado' : 'Desconectado');
+  const cb = $('cBtn');
+  cb.textContent = S.conn ? (demo ? 'Salir del demo' : 'Desconectar') : 'Conectar';
+  cb.className = 'btn ' + (S.conn ? 'red' : 'blue');
+  $('btnDemo').textContent = demo ? 'Salir del demo' : 'Modo demo';
+  renderGo();
+}
+
+/* Botón LARGADA según el momento */
+let goKey = '';
+function renderGo(){
+  const now = Date.now();
+  let txt = 'LARGADA', cls = 'go a-btn', dis = false;
+  if (!S.conn) { txt = 'SIN CONEXIÓN'; cls += ' off'; }
+  else if (BUSY.includes(S.phase)) { txt = 'EN CURSO…'; cls += ' busy'; dis = true; }
+  else if (now < S.refrUntil) { txt = 'ESPERÁ ' + Math.ceil((S.refrUntil - now) / 1000) + ' s'; cls += ' wait'; dis = true; }
+  const key = txt + cls + dis;
+  if (key === goKey) return;
+  goKey = key;
+  const b = $('btnGo'); b.textContent = txt; b.className = cls; b.disabled = dis;
+}
+
+function lamps(which){
+  $('lAdv').className   = 'lamp' + (which === 'adv'   ? ' amb' : '');
+  $('lListo').className = 'lamp' + (which === 'listo' ? ' amb' : '');
+  $('lYa').className    = 'lamp' + (which === 'ya'    ? ' grn' : '');
+}
+const fmtReac = ms => (ms / 1000).toFixed(3);
+function fmtCrono(ms, dec){
+  const s = ms / 1000, d = dec ?? 2;
+  if (s < 60) return s.toFixed(d);
+  const m = Math.floor(s / 60);
+  return m + ':' + (s - m * 60).toFixed(d).padStart(d + 3, '0');
+}
+const fmtCell = (v, f) => v == null ? '—' : (typeof v === 'number' ? f(v) : v);
+
+/* ---------------- Estado de la largada ---------------- */
+let rec = null;
+let tYA = 0, running = false, c1run = false, c2run = false;
+let hist = [];
+
+function setPhase(p){ S.phase = p; S.lastEvt = Date.now(); renderGo(); }
+function setNum(text, cls){
+  const r = $('reac'); r.textContent = text; r.className = 'num mono ' + (cls || '');
+  $('reacUnit').style.visibility = cls === 'to' ? 'hidden' : 'visible';
+}
+function setCrono(n, text, cls){ const c = $('c' + n); c.textContent = text; c.className = 'cn mono ' + (cls || ''); }
+
+function newSequence(){
+  rec = { hora: new Date().toISOString(), espera: null, reac: null, c1: null, c2: null };
+  hist.unshift(rec); if (hist.length > 100) hist.length = 100;
+  running = c1run = c2run = false;
+  setNum('-.---', 'none'); setCrono(1, '--.--', 'none'); setCrono(2, '--.--', 'none');
+  lamps(null); $('status').textContent = 'Calibrando…';
+  setPhase('cal'); saveHist();
+}
+function ensureRec(){ if (!rec) newSequence(); return rec; }
+
+function phaseAdv(){ ensureRec(); lamps('adv'); $('status').textContent = 'ADVERTENCIA'; setPhase('adv'); }
+function phaseListo(seg){
+  ensureRec().espera = seg;
+  lamps('listo'); $('status').textContent = 'LISTO · espera ' + seg.toFixed(1) + ' s'; setPhase('listo');
+}
+function phaseYa(){
+  ensureRec(); lamps('ya'); $('status').textContent = '¡YA! esperando movimiento…'; setPhase('ya');
+  tYA = performance.now(); running = c1run = c2run = true;
+  setNum('0.0', 'run'); setCrono(1, '0.0', 'run'); setCrono(2, '0.0', 'run');
+}
+function resultReac(ms){
+  running = false; lamps(null);
+  setNum(fmtReac(ms), '');
+  ensureRec().reac = ms;
+  $('status').textContent = 'Reacción detectada';
+  S.refrUntil = Date.now() + 2000;                       // el Uno no acepta otra largada por 2 s
+  setPhase('done');
+  try { navigator.vibrate && navigator.vibrate(80); } catch(_){}
+  saveHist(); renderRecs();
+}
+function timeOut(){
+  running = false; lamps(null);
+  setNum('TIME OUT', 'to');
+  ensureRec().reac = 'time out';
+  $('status').textContent = 'Sin movimiento en 5 s desde el YA';
+  setPhase('timeout');
+  saveHist(); renderRecs();
+}
+function resultCrono(n, ms){
+  setCrono(n, fmtCrono(ms), '');
+  if (n === 1) c1run = false; else c2run = false;
+  ensureRec()['c' + n] = ms; saveHist(); renderRecs();
+}
+
+function tick(){
+  if (running || c1run || c2run){
+    const el = performance.now() - tYA;
+    if (running) $('reac').textContent = (el / 1000).toFixed(1);   // aproximado: solo décimas
+    if (el > 30 * 60 * 1000) c1run = c2run = false;               // tope de 30 min
+    if (c1run) $('c1').textContent = fmtCrono(el, 1);
+    if (c2run) $('c2').textContent = fmtCrono(el, 1);
+  }
+  // Si el Uno no responde, no dejar el botón trabado en "EN CURSO"
+  if (BUSY.includes(S.phase) && Date.now() - S.lastEvt > 30000){
+    running = false; lamps(null); $('status').textContent = 'Sin respuesta del sensor'; setPhase('idle');
+  }
+  renderGo();
+  requestAnimationFrame(tick);
+}
+
+/* ---------------- Registros ---------------- */
+function saveHist(){ try { localStorage.setItem('partidor_hist', JSON.stringify(hist)); } catch(_){} }
+function loadHist(){
+  try { hist = JSON.parse(localStorage.getItem('partidor_hist')) || []; } catch(_){ hist = []; }
+  hist.forEach(h => { if (h.reac === 'sin det.') h.reac = 'time out'; });
+}
+function renderRecs(){
+  const box = $('recs'); box.innerHTML = '';
+  const t = document.createElement('div'); t.className = 'lbl ttl'; t.textContent = 'Últimas largadas'; box.appendChild(t);
+  const tiempo = S.mode === 'tiempo';
+  const row = (cells, cls) => {
+    const r = document.createElement('div'); r.className = 'r ' + (cls || '');
+    cells.forEach(c => { const s = document.createElement('span'); s.textContent = c; r.appendChild(s); });
+    box.appendChild(r);
+  };
+  row(tiempo ? ['Hora', 'Reacción', 'Crono 1', 'Crono 2'] : ['Hora', 'Espera', 'Reacción'], 'h');
+  const done = hist.filter(h => h.reac != null).slice(0, 3);
+  if (!done.length){ const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'Todavía no hay largadas'; box.appendChild(e); }
+  done.forEach((h, i) => {
+    const hora = new Date(h.hora).toTimeString().slice(0, 8);
+    row(tiempo
+      ? [hora, fmtCell(h.reac, fmtReac), fmtCell(h.c1, fmtCrono), fmtCell(h.c2, fmtCrono)]
+      : [hora, h.espera == null ? '—' : h.espera.toFixed(1) + ' s', fmtCell(h.reac, fmtReac)],
+      i === 0 ? 'first' : '');
+  });
+  const first = box.querySelector('.r.first'); if (first) first.style.borderTop = 'none';
+  renderHist();
+}
+function renderHist(){
+  const tb = $('hist'); tb.innerHTML = '';
+  hist.slice(0, 40).forEach(h => {
+    const tr = document.createElement('tr');
+    [[new Date(h.hora).toTimeString().slice(0, 8), ''], [fmtCell(h.espera, v => v.toFixed(1)), ''], [fmtCell(h.reac, fmtReac), 'c'],
+     [fmtCell(h.c1, fmtCrono), ''], [fmtCell(h.c2, fmtCrono), '']].forEach(([t, c]) => {
+      const td = document.createElement('td'); td.textContent = t; td.className = 'mono ' + c; tr.appendChild(td);
+    });
+    tb.appendChild(tr);
+  });
+}
+function csv(){
+  const rows = [['fecha_hora', 'espera_s', 'reaccion_ms', 'crono1_ms', 'crono2_ms'].join(';')];
+  hist.slice().reverse().forEach(h => rows.push([
+    new Date(h.hora).toLocaleString('es-AR'), h.espera ?? '', h.reac ?? '', h.c1 ?? '', h.c2 ?? ''
+  ].join(';')));
+  return rows.join('\n');
+}
+
+/* ---------------- Lectura de lo que manda el Uno ----------------
+   Durante la secuencia el Uno manda partes SIN fin de línea:
+   "(...) " → " (2.7s)" → " (!)\r\n". Por eso se revisa también la línea incompleta. */
+let cur = '', flags = {};
+function feed(text){
+  for (const ch of text){
+    if (ch === '\r') continue;
+    if (ch === '\n'){ scanPartial(cur); parseLine(cur); cur = ''; flags = {}; }
+    else cur += ch;
+  }
+  scanPartial(cur);
+}
+function scanPartial(s){
+  if (!flags.adv && s.includes('(...)')) { flags.adv = 1; phaseAdv(); }
+  if (!flags.listo){
+    const m = s.match(/\((\d+(?:\.\d+)?)s\)/);
+    if (m){ flags.listo = 1; phaseListo(parseFloat(m[1])); }
+  }
+  if (!flags.ya && s.includes('(!)')) { flags.ya = 1; phaseYa(); }
+}
+const pinTxt = s => /LOW/.test(s) ? 'LOW (activo)' : 'HIGH (libre)';
+function parseLine(l){
+  const s = l.trim();
+  if (!s) return;
+  log(s);
+  let m;
+  if (/^-{5,}$/.test(s)) { newSequence(); return; }
+  if ((m = s.match(/Reaccion\s*:\s*(\d+)\s*ms/i))) { resultReac(parseInt(m[1])); return; }
+  if (/No detectado golpe/i.test(s)) { timeOut(); return; }
+  if ((m = s.match(/Tiempo Pin7:\s*(\d+)/))) { resultCrono(1, parseInt(m[1])); return; }
+  if ((m = s.match(/Tiempo Pin6:\s*(\d+)/))) { resultCrono(2, parseInt(m[1])); return; }
+  if ((m = s.match(/(?:Threshold|Sens\.)\s*:\s*(\d+)/))) { $('umbral').textContent = m[1]; return; }
+  if ((m = s.match(/(?:Tiempo advertencia|T\.advertencia)\s*:\s*(\d+)/))) { $('adv').textContent = m[1]; return; }
+  if ((m = s.match(/Bater.a(?: baja)?\s*:\s*([\d.]+)\s*V/i))) {
+    S.bat = parseFloat(m[1]); S.batAlert = /ALERTA/i.test(s);
+    $('iBat').textContent = S.bat.toFixed(2) + ' V';
+    if (S.batAlert) toast('¡Batería baja del sensor! (' + m[1] + ' V)', 'err');
+    render(); return;
+  }
+  if ((m = s.match(/Firmware:\s*(.+)/))) { S.fw = m[1]; $('iFw').textContent = m[1]; render(); return; }
+  if ((m = s.match(/^Modo:\s*(.+)/))) { $('iModo').textContent = m[1]; return; }
+  if ((m = s.match(/^Pin ([567]):\s*(.+)/))) { $('iP' + m[1]).textContent = pinTxt(m[2]); return; }
+  if (/Refractario/i.test(s)) {
+    if (S.refrUntil < Date.now()) S.refrUntil = Date.now() + 2000;
+    toast('Esperá unos segundos entre largadas', 'warn'); return;
+  }
+  if (/recalibrado/i.test(s)) { $('calMsg').textContent = 'Sensor calibrado'; $('calMsg').className = 'ok'; toast('Sensor calibrado', 'ok'); return; }
+  if (/Calibraci.n fallida/i.test(s)) {
+    const msg = S.phase === 'cal'
+      ? 'Calibración fallida: el partidor se movía (la largada sigue igual)'
+      : 'Calibración fallida: el partidor se movía. Probá de nuevo.';
+    $('calMsg').textContent = msg; $('calMsg').className = 'err'; toast(msg, 'err'); return;
+  }
+  if (/Trigger Pin 5/i.test(s)) { toast('Largada iniciada desde el control RF', 'ok'); return; }
+}
+
+/* ---------------- Bluetooth (Web Serial) ---------------- */
+async function connect(elegir){
+  if (demo) stopDemo();
+  if (!('serial' in navigator)){
+    toast(isSecureContext
+      ? 'Este navegador no puede usar Bluetooth serie. Usá Chrome para Android 138 o más nuevo.'
+      : 'Abrí esta página por HTTPS o como archivo local en Chrome para Android 138+.', 'err');
+    return;
+  }
+  let p = null;
+  try {
+    if (!elegir){ const ps = await navigator.serial.getPorts(); if (ps.length) p = ps[0]; }
+    if (!p){
+      try {
+        p = await navigator.serial.requestPort({
+          filters: [{ bluetoothServiceClassId: SPP }],
+          allowedBluetoothServiceClassIds: [SPP]
+        });
+      } catch (e) {
+        if (e.name === 'NotFoundError'){ toast('No se eligió ningún equipo', 'warn'); return; }
+        if (e.name !== 'TypeError') throw e;
+        p = await navigator.serial.requestPort();
+      }
+    }
+    toast('Conectando…', 'warn');
+    try { await p.open({ baudRate: BAUD }); }
+    catch (e) { if (e.name !== 'InvalidStateError') throw e; }
+    port = p;
+    writer = port.writable.getWriter();
+    S.conn = true; render(); toast('Sensor conectado', 'ok'); log('— conectado —');
+    loopPromise = readLoop();
+    keepAwake();
+    setTimeout(() => send('i'), 500);                  // pide umbral, advertencia y batería
+  } catch (e) {
+    port = null; writer = null; S.conn = false; render();
+    toast('No se pudo conectar: ' + e.message + ' (¿está cerrada la app de terminal?)', 'err');
+    log('! ' + e.name + ': ' + e.message);
+  }
+}
+async function readLoop(){
+  const dec = new TextDecoder();
+  reading = true;
+  try {
+    reader = port.readable.getReader();
+    while (reading){
+      const { value, done } = await reader.read();
+      if (done) break;
+      if (value) feed(dec.decode(value, { stream: true }));
+    }
+  } catch (e) { if (reading) log('! ' + e.message); }
+  finally { try { reader.releaseLock(); } catch(_){} reader = null; }
+  if (reading) disconnect('Se cortó la conexión Bluetooth', true);
+}
+function resetLargada(){
+  running = c1run = c2run = false; lamps(null);
+  if (BUSY.includes(S.phase)) { $('status').textContent = 'Listo para largar'; S.phase = 'idle'; }
+}
+async function disconnect(motivo, desdeLoop){
+  reading = false;
+  if (!desdeLoop){
+    try { if (reader) await reader.cancel(); } catch(_){}
+    try { await loopPromise; } catch(_){}
+  }
+  try { if (writer) writer.releaseLock(); } catch(_){}
+  try { if (port) await port.close(); } catch(_){}
+  port = null; writer = null;
+  S.conn = false; S.bat = null; resetLargada(); render();
+  log('— desconectado —');
+  if (motivo) toast(motivo, 'warn');
+  releaseAwake();
+}
+async function send(cmd){
+  log('› ' + cmd, 'tx');
+  if (demo){ fakeUno(cmd); return; }
+  if (!writer){ toast('Sin conexión con el sensor', 'warn'); return; }
+  try { await writer.write(enc.encode(cmd + '\r\n')); }
+  catch (e) { toast('Error al enviar: ' + e.message, 'err'); }
+}
+
+/* Pantalla siempre encendida mientras hay conexión */
+let wl = null;
+async function keepAwake(){ try { if ('wakeLock' in navigator) wl = await navigator.wakeLock.request('screen'); } catch(_){} }
+function releaseAwake(){ try { wl && wl.release(); } catch(_){} wl = null; }
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && S.conn) keepAwake();
+});
+
+/* ---------------- Modo demo (simula el Uno, sin hardware) ---------------- */
+const fu = { th: 15, adv: 4, busy: false, refr: 0, timers: [] };
+const later = (ms, f) => fu.timers.push(setTimeout(f, ms));
+function fakeUno(c){
+  const out = s => feed(s);
+  if (c === '*'){
+    if (fu.busy) return;
+    if (Date.now() < fu.refr){ out('Refractario: espera unos segundos\r\n'); return; }
+    fu.busy = true;
+    const esp = 2000 + Math.floor(Math.random() * 2001);
+    const sinMov = Math.random() < 0.15;                         // a veces simula un time out
+    const r = 560 + Math.floor(Math.random() * 300);
+    const c1 = 9000 + Math.floor(Math.random() * 4000);
+    out('-----------\r\n'); out('(...) ');
+    later(fu.adv * 1000, () => out(' (' + (esp / 1000).toFixed(1) + 's)'));
+    later(fu.adv * 1000 + esp, () => {
+      out(' (!)\r\n');
+      if (sinMov){
+        later(1000, () => out('Reaccion:'));
+        later(5000, () => { out('No detectado golpe\r\n'); fu.busy = false; });
+      } else {
+        later(r, () => { out('Reaccion : ' + r + ' ms\r\n'); fu.busy = false; fu.refr = Date.now() + 2000; });
+      }
+      later(c1, () => out('Tiempo Pin7: ' + c1 + ' ms\r\n'));
+      later(c1 + 640, () => out('Tiempo Pin6: ' + (c1 + 640) + ' ms\r\n'));
+    });
+  }
+  else if (c === 'c') out('Sensor recalibrado\r\n');
+  else if (c === '+'){ fu.th = Math.min(99, fu.th + 1); out('Threshold: ' + fu.th + '\r\n'); }
+  else if (c === '-'){ fu.th = Math.max(1, fu.th - 1); out('Threshold: ' + fu.th + '\r\n'); }
+  else if (c === 'T'){ fu.adv = Math.min(20, fu.adv + 1); out('Tiempo advertencia: ' + fu.adv + ' segundos\r\n'); }
+  else if (c === 't'){ if (fu.adv > 3) fu.adv--; out('Tiempo advertencia: ' + fu.adv + ' segundos\r\n'); }
+  else if (c === 'i'){
+    out('\r\n-Configuración-\r\nModo: MANUAL + TRIGGER\r\nT.advertencia: ' + fu.adv + ' s\r\nSens.: ' + fu.th +
+        '\r\nBatería: 7.84V\r\nPin 7: HIGH (desconectado)\r\nPin 6: HIGH (desconectado)\r\nPin 5: HIGH (desconectado)\r\n');
+  }
+}
+async function startDemo(){
+  if (port) await disconnect();
+  demo = true; S.conn = true;
+  feed('Firmware: demo (simulado)\r\n'); fakeUno('i'); keepAwake(); render();
+  toast('Modo demo: simula el sensor, no usa Bluetooth', 'warn');
+}
+function stopDemo(){
+  fu.timers.forEach(clearTimeout); fu.timers = []; fu.busy = false;
+  demo = false; S.conn = false; S.bat = null; S.fw = null; $('iFw').textContent = '—';
+  resetLargada(); releaseAwake(); render();
+}
+
+
+/* ---------------- Pantalla completa (como F11) ---------------- */
+const fsOn = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+function goFull(){
+  if (fsOn()) return;
+  const el = document.documentElement;
+  const req = el.requestFullscreen || el.webkitRequestFullscreen;
+  if (!req) return;
+  try { const p = req.call(el, { navigationUI: 'hide' }); if (p && p.catch) p.catch(() => {}); } catch(_){}
+}
+function exitFull(){
+  const ex = document.exitFullscreen || document.webkitExitFullscreen;
+  try { const p = ex && ex.call(document); if (p && p.catch) p.catch(() => {}); } catch(_){}
+}
+function toggleFull(){ fsOn() ? exitFull() : goFull(); }
+function renderFull(){ $('btnFullCfg').textContent = fsOn() ? 'Salir de pantalla completa' : 'Pantalla completa'; }
+document.addEventListener('fullscreenchange', renderFull);
+document.addEventListener('webkitfullscreenchange', renderFull);
+
+/* ---------------- Botones ---------------- */
+document.querySelectorAll('.chipSlot').forEach(slot => slot.replaceWith($('chipTpl').content.cloneNode(true)));
+
+$('mReac').onclick = () => { if (S.conn) { goFull(); openMode('reac'); } };
+$('mTiempo').onclick = () => { if (S.conn) { goFull(); openMode('tiempo'); } };
+$('btnConectar').onclick = () => connect(false);
+$('btnDemoIni').onclick = () => startDemo();
+$('btnDescIni').onclick = () => { if (demo) stopDemo(); else disconnect(); };
+
+$('btnVolver').onclick = () => show('vInicio');
+$('btnCfg').onclick = () => show('vConfig');
+let lastGo = 0;
+$('btnGo').onclick = () => {
+  if (!S.conn){ connect(false); return; }               // "SIN CONEXIÓN": tocar para reconectar
+  const now = Date.now();
+  if (now - lastGo < 800) return;                       // evita doble toque
+  lastGo = now; send('*');
+};
+
+$('btnCfgVolver').onclick = () => show(S.mode ? 'vModo' : 'vInicio');
+$('btnCal').onclick = () => { $('calMsg').textContent = 'Calibrando…'; $('calMsg').className = ''; send('c'); };
+$('btnInfo').onclick = () => send('i');
+document.querySelectorAll('[data-cmd]').forEach(b => b.onclick = () => send(b.dataset.cmd));
+$('cBtn').onclick = () => { if (demo) stopDemo(); else if (S.conn) disconnect(); else connect(false); };
+$('btnOtro').onclick = async () => { if (demo) stopDemo(); if (port) await disconnect(); connect(true); };
+$('btnCambiarModo').onclick = () => show('vInicio');
+$('btnFull').onclick = toggleFull;
+$('btnFullCfg').onclick = toggleFull;
+$('btnDemo').onclick = () => { if (demo) stopDemo(); else startDemo(); };
+$('btnCopy').onclick = async () => {
+  try { await navigator.clipboard.writeText(csv()); toast('Historial copiado', 'ok'); }
+  catch (_) { log(csv()); toast('No se pudo copiar: quedó en el registro', 'warn'); }
+};
+$('btnClear').onclick = () => {
+  if (!confirm('¿Borrar todo el historial?')) return;
+  hist = []; rec = null; saveHist(); renderRecs();
+};
+
+loadHist(); renderRecs(); render();
+
+/* Guardar la app en el celular para usarla sin internet (solo cuando se abre desde la web) */
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
+  navigator.serviceWorker.register('sw.js').catch(e => log('! service worker: ' + e.message));
+}
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
