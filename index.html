@@ -80,9 +80,8 @@ button{font-family:inherit}
 
 /* ---------- Pantalla de largada ---------- */
 #mBody{flex:1;min-height:0;display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
-.m-reac #mBody{grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"lamps" "reac" "rec" "btn"}
-.m-tiempo #mBody{grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"lamps" "reac" "cronos" "rec" "btn"}
-.m-reac .a-cronos{display:none!important}
+.m-reac #mBody,.m-tiempo #mBody{grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"lamps" "reac" "cronos" "rec" "btn"}
+.m-reac .soloT{display:none!important}
 .a-lamps{grid-area:lamps}.a-reac{grid-area:reac}.a-cronos{grid-area:cronos}.a-rec{grid-area:rec}.a-btn{grid-area:btn}
 
 .lamps{padding:14px 10px 12px}
@@ -100,33 +99,38 @@ button{font-family:inherit}
 .num.to{color:var(--amb);text-shadow:0 0 18px rgba(255,176,32,.35);font-size:min(15vw,8vh)}
 .unit{font-size:13px;color:var(--lbl)}
 
-.cronos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.cronos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.m-reac .cronos{grid-template-columns:minmax(0,1fr)}
 .cronos .panel{text-align:center;padding:12px 6px}
-.cn{font-size:min(10vw,5.5vh);font-weight:600;margin-top:4px;color:var(--hi);white-space:nowrap}
+.cn{font-size:min(7.5vw,5.5vh);font-weight:600;margin-top:4px;color:var(--hi);white-space:nowrap}
+.m-reac .cn{font-size:min(10vw,5.5vh)}
 .cn.run{color:var(--run)} .cn.none{color:var(--dim)}
+.m-tiempo .cronos .lbl{white-space:nowrap}
+.pinL{display:none}
+.cn.t10{color:var(--grn)} .cn.t10.none{color:var(--dim)}
 
 .recs{font-size:13px;color:var(--lbl);padding:2px 6px}
 .recs .r{display:grid;gap:6px;padding:5px 2px;border-top:1px solid #1a222c}
 .recs .r span{text-align:right}.recs .r span:first-child{text-align:left}
 .recs .h{border-top:none;padding:0 2px 4px;font-family:system-ui,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
 .recs .ttl{display:none}
-.m-reac .recs .r{grid-template-columns:repeat(3,minmax(0,1fr))}
-.m-tiempo .recs .r{grid-template-columns:1.1fr repeat(3,minmax(0,1fr))}
+.m-reac .recs .r{grid-template-columns:repeat(4,minmax(0,1fr))}
+.m-tiempo .recs .r{grid-template-columns:1.1fr repeat(4,minmax(0,1fr));gap:4px;font-size:12px}
 .recs .empty{padding:6px 2px;font-family:system-ui,sans-serif}
 
 /* Horizontal: dos mitades */
 @media (orientation:landscape) and (min-width:560px){
   #vModo{max-width:none}
-  .m-reac #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
-    grid-template-areas:"lamps rec" "reac rec" "reac btn";column-gap:14px}
-  .m-tiempo #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
+  .m-reac #mBody,.m-tiempo #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
     grid-template-areas:"lamps cronos" "reac rec" "reac btn";column-gap:14px}
   .lamp{width:30px;height:30px}
   .lamps{padding:10px 10px 8px}
   .status{margin-top:6px}
   .num{font-size:min(12vw,24vh)}
   .num.to{font-size:min(7vw,14vh)}
-  .cn{font-size:min(4.5vw,9vh)}
+  .cn{font-size:min(3.2vw,8vh)}
+  .m-reac .cn{font-size:min(4.5vw,9vh)}
+  .pinL{display:inline}
   .recs{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:10px 14px;overflow:hidden;min-height:0}
   .recs .ttl{display:block;margin-bottom:8px}
   .go{padding:16px 8px;font-size:26px}
@@ -149,7 +153,7 @@ table{width:100%;border-collapse:collapse;font-size:13px;margin-top:6px}
 th{font-weight:500;color:var(--lbl);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;text-align:right;padding:4px}
 td{text-align:right;padding:5px 4px;border-top:1px solid var(--edge)}
 th:first-child,td:first-child{text-align:left}
-td.c{color:var(--cyan)}
+td.c{color:var(--cyan)} td.g{color:var(--grn)}
 .tools{display:flex;gap:8px;margin-top:8px}
 .tools .btn{font-size:13px;padding:10px 6px;font-weight:500}
 #log{font-size:11.5px;max-height:220px;overflow:auto;white-space:pre-wrap;margin:8px 0 0;color:#8a9aab;-webkit-user-select:text;user-select:text}
@@ -189,13 +193,13 @@ td.c{color:var(--cyan)}
 
   <button class="modeBtn reac" id="mReac" disabled>
     <svg class="ic" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
-    <span style="flex:1"><b>Partidor (Reacción)</b><small data-on="Advertencia, listo, ya y tiempo de reacción" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
+    <span style="flex:1"><b>Partidor (Reacción)</b><small data-on="Advertencia, listo, ya, reacción y tiempo a los 10 m" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
     <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
   </button>
 
   <button class="modeBtn tiempo" id="mTiempo" disabled>
     <svg class="ic" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>
-    <span style="flex:1"><b>Con toma de tiempo</b><small data-on="Reacción más Crono 1 y Crono 2 del control RF" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
+    <span style="flex:1"><b>Con toma de tiempo</b><small data-on="Reacción, 10 m, Crono 1 y Crono 2 del control RF" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
     <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
   </button>
 
@@ -246,8 +250,9 @@ td.c{color:var(--cyan)}
     </div>
 
     <div class="cronos a-cronos">
-      <div class="panel"><div class="lbl">Crono 1 · Pin 7</div><div class="cn mono none" id="c1">--.--</div></div>
-      <div class="panel"><div class="lbl">Crono 2 · Pin 6</div><div class="cn mono none" id="c2">--.--</div></div>
+      <div class="panel"><div class="lbl">10 m</div><div class="cn mono t10 none" id="t10">--.--</div></div>
+      <div class="panel soloT"><div class="lbl">Crono 1<span class="pinL"> · Pin 2</span></div><div class="cn mono none" id="c1">--.--</div></div>
+      <div class="panel soloT"><div class="lbl">Crono 2<span class="pinL"> · Pin 3</span></div><div class="cn mono none" id="c2">--.--</div></div>
     </div>
 
     <div class="recs mono a-rec" id="recs"></div>
@@ -302,8 +307,9 @@ td.c{color:var(--cyan)}
       <div class="row"><span>Modo</span><span id="iModo">—</span></div>
       <div class="row"><span>Batería</span><span class="mono" id="iBat">—</span></div>
       <div class="row"><span>Pin 5 · inicio RF</span><span id="iP5">—</span></div>
-      <div class="row"><span>Pin 6 · crono 2</span><span id="iP6">—</span></div>
-      <div class="row"><span>Pin 7 · crono 1</span><span id="iP7">—</span></div>
+      <div class="row"><span>Pin 2 · crono 1</span><span id="iP2">—</span></div>
+      <div class="row"><span>Pin 3 · crono 2</span><span id="iP3">—</span></div>
+      <div class="row"><span>Resultados 10 m recibidos</span><span class="mono" id="iR10">—</span></div>
     </div>
   </div>
 
@@ -320,13 +326,13 @@ td.c{color:var(--cyan)}
 
   <button class="btn" id="btnFullCfg">Pantalla completa</button>
   <button class="btn" id="btnCambiarModo">Cambiar modo</button>
-  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.1 (16/11/2026)</div>
+  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.2 (24/11/2026)</div>
 
   <div class="panel sec">
     <details>
       <summary>Historial completo y registro</summary>
       <table>
-        <thead><tr><th>Hora</th><th>Espera</th><th>Reacción</th><th>Crono 1</th><th>Crono 2</th></tr></thead>
+        <thead><tr><th>Hora</th><th>Espera</th><th>Reacción</th><th>10 m</th><th>Crono 1</th><th>Crono 2</th></tr></thead>
         <tbody id="hist"></tbody>
       </table>
       <div class="tools">
@@ -447,6 +453,7 @@ const fmtCell = (v, f) => v == null ? '—' : (typeof v === 'number' ? f(v) : v)
 /* ---------------- Estado de la largada ---------------- */
 let rec = null;
 let tYA = 0, running = false, c1run = false, c2run = false;
+let reacPend = false;          // llegó "Reaccion:" y falta el "N ms"
 let hist = [];
 
 function setPhase(p){ S.phase = p; S.lastEvt = Date.now(); renderGo(); }
@@ -455,12 +462,13 @@ function setNum(text, cls){
   $('reacUnit').style.visibility = cls === 'to' ? 'hidden' : 'visible';
 }
 function setCrono(n, text, cls){ const c = $('c' + n); c.textContent = text; c.className = 'cn mono ' + (cls || ''); }
+function setT10(text, cls){ const c = $('t10'); c.textContent = text; c.className = 'cn mono t10 ' + (cls || ''); }
 
 function newSequence(){
-  rec = { hora: new Date().toISOString(), espera: null, reac: null, c1: null, c2: null };
+  rec = { hora: new Date().toISOString(), espera: null, reac: null, t10: null, c1: null, c2: null, ya: false };
   hist.unshift(rec); if (hist.length > 100) hist.length = 100;
-  running = c1run = c2run = false;
-  setNum('-.---', 'none'); setCrono(1, '--.--', 'none'); setCrono(2, '--.--', 'none');
+  running = c1run = c2run = false; reacPend = false;
+  setNum('-.---', 'none'); setCrono(1, '--.--', 'none'); setCrono(2, '--.--', 'none'); setT10('--.--', 'none');
   lamps(null); $('status').textContent = 'Calibrando…';
   setPhase('cal'); saveHist();
 }
@@ -472,12 +480,12 @@ function phaseListo(seg){
   lamps('listo'); $('status').textContent = 'LISTO · espera ' + seg.toFixed(1) + ' s'; setPhase('listo');
 }
 function phaseYa(){
-  ensureRec(); lamps('ya'); $('status').textContent = '¡YA! esperando movimiento…'; setPhase('ya');
+  ensureRec().ya = true; lamps('ya'); $('status').textContent = '¡YA! esperando movimiento…'; setPhase('ya');
   tYA = performance.now(); running = c1run = c2run = true;
   setNum('0.0', 'run'); setCrono(1, '0.0', 'run'); setCrono(2, '0.0', 'run');
 }
 function resultReac(ms){
-  running = false; lamps(null);
+  running = false; reacPend = false; lamps(null);
   setNum(fmtReac(ms), '');
   ensureRec().reac = ms;
   $('status').textContent = 'Reacción detectada';
@@ -487,7 +495,7 @@ function resultReac(ms){
   saveHist(); renderRecs();
 }
 function timeOut(){
-  running = false; lamps(null);
+  running = false; reacPend = false; lamps(null);
   setNum('TIME OUT', 'to');
   ensureRec().reac = 'time out';
   $('status').textContent = 'Sin movimiento en 5 s desde el YA';
@@ -498,6 +506,16 @@ function resultCrono(n, ms){
   setCrono(n, fmtCrono(ms), '');
   if (n === 1) c1run = false; else c2run = false;
   ensureRec()['c' + n] = ms; saveHist(); renderRecs();
+}
+/* Tiempo a los 10 m (estación de la cámara, llega 4 a 6 s después del YA).
+   Si ya empezó otra largada y todavía no hubo YA, es de la largada anterior. */
+function result10(ms){
+  const r = (rec && rec.ya) ? rec : hist.find(h => h !== rec && h.ya);
+  if (!r){ log('(10 m sin largada: ' + ms + ' ms)'); return; }
+  r.t10 = ms;
+  if (r === rec) setT10(fmtCrono(ms), '');
+  try { navigator.vibrate && navigator.vibrate(40); } catch(_){}
+  saveHist(); renderRecs();
 }
 
 function tick(){
@@ -531,14 +549,14 @@ function renderRecs(){
     cells.forEach(c => { const s = document.createElement('span'); s.textContent = c; r.appendChild(s); });
     box.appendChild(r);
   };
-  row(tiempo ? ['Hora', 'Reacción', 'Crono 1', 'Crono 2'] : ['Hora', 'Espera', 'Reacción'], 'h');
+  row(tiempo ? ['Hora', 'Reac.', '10 m', 'Crono 1', 'Crono 2'] : ['Hora', 'Espera', 'Reacción', '10 m'], 'h');
   const done = hist.filter(h => h.reac != null).slice(0, 3);
   if (!done.length){ const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'Todavía no hay largadas'; box.appendChild(e); }
   done.forEach((h, i) => {
     const hora = new Date(h.hora).toTimeString().slice(0, 8);
     row(tiempo
-      ? [hora, fmtCell(h.reac, fmtReac), fmtCell(h.c1, fmtCrono), fmtCell(h.c2, fmtCrono)]
-      : [hora, h.espera == null ? '—' : h.espera.toFixed(1) + ' s', fmtCell(h.reac, fmtReac)],
+      ? [hora, fmtCell(h.reac, fmtReac), fmtCell(h.t10, fmtCrono), fmtCell(h.c1, fmtCrono), fmtCell(h.c2, fmtCrono)]
+      : [hora, h.espera == null ? '—' : h.espera.toFixed(1) + ' s', fmtCell(h.reac, fmtReac), fmtCell(h.t10, fmtCrono)],
       i === 0 ? 'first' : '');
   });
   const first = box.querySelector('.r.first'); if (first) first.style.borderTop = 'none';
@@ -549,16 +567,16 @@ function renderHist(){
   hist.slice(0, 40).forEach(h => {
     const tr = document.createElement('tr');
     [[new Date(h.hora).toTimeString().slice(0, 8), ''], [fmtCell(h.espera, v => v.toFixed(1)), ''], [fmtCell(h.reac, fmtReac), 'c'],
-     [fmtCell(h.c1, fmtCrono), ''], [fmtCell(h.c2, fmtCrono), '']].forEach(([t, c]) => {
+     [fmtCell(h.t10, fmtCrono), 'g'], [fmtCell(h.c1, fmtCrono), ''], [fmtCell(h.c2, fmtCrono), '']].forEach(([t, c]) => {
       const td = document.createElement('td'); td.textContent = t; td.className = 'mono ' + c; tr.appendChild(td);
     });
     tb.appendChild(tr);
   });
 }
 function csv(){
-  const rows = [['fecha_hora', 'espera_s', 'reaccion_ms', 'crono1_ms', 'crono2_ms'].join(';')];
+  const rows = [['fecha_hora', 'espera_s', 'reaccion_ms', 'tiempo10m_ms', 'crono1_ms', 'crono2_ms'].join(';')];
   hist.slice().reverse().forEach(h => rows.push([
-    new Date(h.hora).toLocaleString('es-AR'), h.espera ?? '', h.reac ?? '', h.c1 ?? '', h.c2 ?? ''
+    new Date(h.hora).toLocaleString('es-AR'), h.espera ?? '', h.reac ?? '', h.t10 ?? '', h.c1 ?? '', h.c2 ?? ''
   ].join(';')));
   return rows.join('\n');
 }
@@ -584,19 +602,26 @@ function scanPartial(s){
   if (!flags.ya && s.includes('(!)')) { flags.ya = 1; phaseYa(); }
 }
 const pinTxt = s => /LOW/.test(s) ? 'LOW (activo)' : 'HIGH (libre)';
+const PIN_VIEJO = { '7': '2', '6': '3', '5': '5' };     // firmware 7.4: cronos en pines 7 y 6
 function parseLine(l){
   const s = l.trim();
   if (!s) return;
   log(s);
   let m;
   if (/^-{5,}$/.test(s)) { newSequence(); return; }
+  // Va antes que "Reaccion": si llega entre "Reaccion:" y "N ms", queda pegado a ese texto
+  if ((m = s.match(/Tiempo 10m:\s*(\d+)/))) {
+    if (/^Reaccion\s*:/i.test(s)) reacPend = true;
+    result10(parseInt(m[1])); return;
+  }
   if ((m = s.match(/Reaccion\s*:\s*(\d+)\s*ms/i))) { resultReac(parseInt(m[1])); return; }
+  if (reacPend && (m = s.match(/^(\d+)\s*ms$/))) { resultReac(parseInt(m[1])); return; }
   if (/No detectado golpe/i.test(s)) { timeOut(); return; }
   if ((m = s.match(/Tiempo Pin7:\s*(\d+)/))) { resultCrono(1, parseInt(m[1])); return; }
   if ((m = s.match(/Tiempo Pin6:\s*(\d+)/))) { resultCrono(2, parseInt(m[1])); return; }
   if ((m = s.match(/(?:Threshold|Sens\.)\s*:\s*(\d+)/))) { $('umbral').textContent = m[1]; return; }
   if ((m = s.match(/(?:Tiempo advertencia|T\.advertencia)\s*:\s*(\d+)/))) { $('adv').textContent = m[1]; return; }
-  if ((m = s.match(/Bater.a(?: baja)?\s*:\s*([\d.]+)\s*V/i))) {
+  if ((m = s.match(/Bater.a(?: baja| cr.tica)?\s*:\s*([\d.]+)\s*V/i))) {
     S.bat = parseFloat(m[1]); S.batAlert = /ALERTA/i.test(s);
     $('iBat').textContent = S.bat.toFixed(2) + ' V';
     if (S.batAlert) toast('¡Batería baja del sensor! (' + m[1] + ' V)', 'err');
@@ -604,7 +629,9 @@ function parseLine(l){
   }
   if ((m = s.match(/Firmware:\s*(.+)/))) { S.fw = m[1]; $('iFw').textContent = m[1]; render(); return; }
   if ((m = s.match(/^Modo:\s*(.+)/))) { $('iModo').textContent = m[1]; return; }
-  if ((m = s.match(/^Pin ([567]):\s*(.+)/))) { $('iP' + m[1]).textContent = pinTxt(m[2]); return; }
+  if ((m = s.match(/^Pin ([23]) \(Crono \d\):\s*(.+)/))) { $('iP' + m[1]).textContent = pinTxt(m[2]); return; }
+  if ((m = s.match(/^Pin ([567]):\s*(.+)/))) { $('iP' + PIN_VIEJO[m[1]]).textContent = pinTxt(m[2]); return; }
+  if ((m = s.match(/^Resultados 10m:\s*(\d+)/))) { $('iR10').textContent = m[1]; return; }
   if (/Refractario/i.test(s)) {
     if (S.refrUntil < Date.now()) S.refrUntil = Date.now() + 2000;
     toast('Esperá unos segundos entre largadas', 'warn'); return;
@@ -673,7 +700,7 @@ async function readLoop(){
   if (reading) disconnect('Se cortó la conexión Bluetooth', true);
 }
 function resetLargada(){
-  running = c1run = c2run = false; lamps(null);
+  running = c1run = c2run = false; reacPend = false; lamps(null);
   if (BUSY.includes(S.phase)) { $('status').textContent = 'Listo para largar'; S.phase = 'idle'; }
 }
 async function disconnect(motivo, desdeLoop){
@@ -707,7 +734,7 @@ document.addEventListener('visibilitychange', () => {
 });
 
 /* ---------------- Modo demo (simula el Uno, sin hardware) ---------------- */
-const fu = { th: 15, adv: 4, busy: false, refr: 0, timers: [] };
+const fu = { th: 15, adv: 4, busy: false, refr: 0, r10: 0, timers: [] };
 const later = (ms, f) => fu.timers.push(setTimeout(f, ms));
 function fakeUno(c){
   const out = s => feed(s);
@@ -718,6 +745,7 @@ function fakeUno(c){
     const esp = 2000 + Math.floor(Math.random() * 2001);
     const sinMov = Math.random() < 0.15;                         // a veces simula un time out
     const r = 560 + Math.floor(Math.random() * 300);
+    const t10 = 4000 + Math.floor(Math.random() * 1500);         // estación de los 10 m
     const c1 = 9000 + Math.floor(Math.random() * 4000);
     out('-----------\r\n'); out('(...) ');
     later(fu.adv * 1000, () => out(' (' + (esp / 1000).toFixed(1) + 's)'));
@@ -728,6 +756,7 @@ function fakeUno(c){
         later(5000, () => { out('No detectado golpe\r\n'); fu.busy = false; });
       } else {
         later(r, () => { out('Reaccion : ' + r + ' ms\r\n'); fu.busy = false; fu.refr = Date.now() + 2000; });
+        later(t10 + 150, () => { fu.r10++; out('Tiempo 10m: ' + t10 + ' ms\r\n'); });
       }
       later(c1, () => out('Tiempo Pin7: ' + c1 + ' ms\r\n'));
       later(c1 + 640, () => out('Tiempo Pin6: ' + (c1 + 640) + ' ms\r\n'));
@@ -740,7 +769,8 @@ function fakeUno(c){
   else if (c === 't'){ if (fu.adv > 3) fu.adv--; out('Tiempo advertencia: ' + fu.adv + ' segundos\r\n'); }
   else if (c === 'i'){
     out('\r\n-Configuración-\r\nModo: MANUAL + TRIGGER\r\nT.advertencia: ' + fu.adv + ' s\r\nSens.: ' + fu.th +
-        '\r\nBatería: 7.84V\r\nPin 7: HIGH (desconectado)\r\nPin 6: HIGH (desconectado)\r\nPin 5: HIGH (desconectado)\r\n');
+        '\r\nBatería: 7.84V\r\nPin 2 (Crono 1): HIGH\r\nPin 3 (Crono 2): HIGH\r\nPin 5: HIGH\r\n' +
+        'Demora fija cronos: 25 ms (restada)\r\nResultados 10m: ' + fu.r10 + '\r\n');
   }
 }
 async function startDemo(){

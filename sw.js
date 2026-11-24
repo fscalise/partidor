@@ -1,7 +1,7 @@
 // Guarda la app en el celular para que funcione sin internet (en la pileta).
 // Abre siempre lo guardado al instante y, si hay internet, baja la versión nueva
 // para la próxima vez que se abra.
-const CACHE = 'partidor-v2.1';
+const CACHE = 'partidor-v2.2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
