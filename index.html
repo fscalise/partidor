@@ -34,8 +34,12 @@ button{font-family:inherit}
 .ib{width:44px;height:44px;flex:none;display:flex;align-items:center;justify-content:center;border-radius:12px;
   background:var(--panel);border:1px solid var(--edge);color:var(--txt);padding:0}
 .ib:active{background:#223040}
-.title{flex:1;min-width:0;font-size:13px;font-weight:600;letter-spacing:.1em;line-height:1.15;color:#9fb3c8}
+.title{flex:1;min-width:0;font-size:12.5px;font-weight:600;letter-spacing:.04em;line-height:1.15;color:#9fb3c8}
 .title.big{font-size:16px;letter-spacing:.25em}
+/* En vertical el nombre del modo va en su propio renglón, debajo de la cabecera */
+#vModo .hdr{flex-wrap:wrap;row-gap:6px}
+#vModo .title{order:5;flex-basis:100%;text-align:center;font-size:13px;letter-spacing:.2em}
+#vModo .chip{margin-left:auto}
 .chip{display:flex;align-items:center;gap:7px;height:44px;flex:none;padding:0 13px;border-radius:999px;
   background:var(--panel);border:1px solid var(--edge);font-size:16px;font-weight:600}
 .dot{width:13px;height:13px;border-radius:50%;background:#3a4654;flex:none}
@@ -48,17 +52,24 @@ button{font-family:inherit}
 /* ---------- Inicio ---------- */
 .intro{padding:14px 4px 4px}
 .intro h1{margin:8px 0 0;font-size:28px;font-weight:700;color:var(--hi);line-height:1.2}
-.modeBtn{display:flex;align-items:center;gap:16px;text-align:left;width:100%;border-radius:18px;padding:22px 18px}
-.modeBtn .ic{flex:none}
-.modeBtn b{display:block;font-size:21px}
-.modeBtn small{display:block;font-size:14px;margin-top:4px;line-height:1.35}
-.modeBtn.reac{background:#0f3d22;border:1px solid #1f7a44;color:#d6ffe4}
-.modeBtn.reac .ic{color:var(--grn)} .modeBtn.reac small{color:#a8dcbb}
-.modeBtn.tiempo{background:#13314a;border:1px solid #22557c;color:#dcefff}
-.modeBtn.tiempo .ic{color:var(--cyan)} .modeBtn.tiempo small{color:#a9cde8}
+.paso{padding:14px;display:flex;flex-direction:column;gap:10px}
+.paso .pTxt{font-size:15px;color:var(--hi);line-height:1.35}
+.paso2{padding:4px 4px 0}
+.paso2 .p2{font-size:14px;margin-top:4px;color:var(--txt)}
+.paso2 .p2.off{color:var(--amb)}
+.modeBtn{display:flex;align-items:center;gap:14px;text-align:left;width:100%;border-radius:16px;padding:14px;flex:none;color:#eef4fa}
+.modeBtn .icb{width:44px;height:44px;flex:none;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.25)}
+.modeBtn b{display:block;font-size:19px}
+.modeBtn small{display:block;font-size:13px;margin-top:2px;line-height:1.3}
+.modeBtn .eq{display:block;font-size:12px;margin-top:6px;font-weight:600;letter-spacing:.02em}
+.modeBtn.mo-reac{background:#0f3d22;border:1px solid #1f7a44} .mo-reac .icb{color:var(--grn)} .mo-reac small,.mo-reac .eq,.mo-reac .chev{color:#a8dcbb}
+.modeBtn.mo-crono{background:#13314a;border:1px solid #22557c} .mo-crono .icb{color:var(--cyan)} .mo-crono small,.mo-crono .eq,.mo-crono .chev{color:#a9cde8}
+.modeBtn.mo-salida{background:#3a2c10;border:1px solid #7a5a1f} .mo-salida .icb{color:var(--amb)} .mo-salida small,.mo-salida .eq,.mo-salida .chev{color:#e8cf98}
+.modeBtn.mo-completo{background:#2a2040;border:1px solid #56428a} .mo-completo .icb{color:#b9a2ff} .mo-completo small,.mo-completo .eq,.mo-completo .chev{color:#cfc2f0}
 .modeBtn:active{transform:scale(.98)}
-.modeBtn:disabled{background:var(--panel);border:1px dashed #2a3846;color:#6b7a8b;transform:none}
-.modeBtn:disabled .ic,.modeBtn:disabled small{color:#6b7a8b}
+.modeBtn:disabled{background:var(--panel);border:1px dashed #2a3846;color:var(--lbl);transform:none}
+.modeBtn:disabled .icb{color:var(--dim);background:#0e141b}
+.modeBtn:disabled small,.modeBtn:disabled .eq{color:var(--lbl)}
 .modeBtn:disabled .chev{display:none}
 .grow{flex:1}
 .warnTxt{text-align:center;font-size:14px;color:var(--amb)}
@@ -80,8 +91,11 @@ button{font-family:inherit}
 
 /* ---------- Pantalla de largada ---------- */
 #mBody{flex:1;min-height:0;display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
-.m-reac #mBody,.m-tiempo #mBody{grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"lamps" "reac" "cronos" "rec" "btn"}
-.m-reac .soloT{display:none!important}
+#vModo #mBody{grid-template-rows:auto minmax(0,1fr) auto auto auto;grid-template-areas:"lamps" "reac" "cronos" "rec" "btn"}
+#vModo.noBox #mBody{grid-template-rows:auto minmax(0,1fr) auto auto;grid-template-areas:"lamps" "reac" "rec" "btn"}
+#vModo.noBox .a-cronos{display:none!important}
+#vModo:not(.has10) .p10{display:none!important}
+#vModo:not(.hasCr) .soloT{display:none!important}
 .a-lamps{grid-area:lamps}.a-reac{grid-area:reac}.a-cronos{grid-area:cronos}.a-rec{grid-area:rec}.a-btn{grid-area:btn}
 
 .lamps{padding:14px 10px 12px}
@@ -100,12 +114,13 @@ button{font-family:inherit}
 .unit{font-size:13px;color:var(--lbl)}
 
 .cronos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.m-reac .cronos{grid-template-columns:minmax(0,1fr)}
+.cols1 .cronos{grid-template-columns:minmax(0,1fr)}
+.cols2 .cronos{grid-template-columns:repeat(2,minmax(0,1fr))}
 .cronos .panel{text-align:center;padding:12px 6px}
 .cn{font-size:min(7.5vw,5.5vh);font-weight:600;margin-top:4px;color:var(--hi);white-space:nowrap}
-.m-reac .cn{font-size:min(10vw,5.5vh)}
+.cols1 .cn{font-size:min(10vw,5.5vh)} .cols2 .cn{font-size:min(9vw,5.5vh)}
 .cn.run{color:var(--run)} .cn.none{color:var(--dim)}
-.m-tiempo .cronos .lbl{white-space:nowrap}
+.cols3 .cronos .lbl{white-space:nowrap}
 .pinL{display:none}
 .cn.t10{color:var(--grn)} .cn.t10.none{color:var(--dim)}
 
@@ -114,22 +129,25 @@ button{font-family:inherit}
 .recs .r span{text-align:right}.recs .r span:first-child{text-align:left}
 .recs .h{border-top:none;padding:0 2px 4px;font-family:system-ui,sans-serif;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase}
 .recs .ttl{display:none}
-.m-reac .recs .r{grid-template-columns:repeat(4,minmax(0,1fr))}
-.m-tiempo .recs .r{grid-template-columns:1.1fr repeat(4,minmax(0,1fr));gap:4px;font-size:12px}
+.recs .r.c5{gap:4px;font-size:12px}
 .recs .empty{padding:6px 2px;font-family:system-ui,sans-serif}
 
 /* Horizontal: dos mitades */
 @media (orientation:landscape) and (min-width:560px){
   #vModo{max-width:none}
-  .m-reac #mBody,.m-tiempo #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
+  #vModo .hdr{flex-wrap:nowrap}
+  #vModo .title{order:0;flex-basis:auto;text-align:left;font-size:13px;letter-spacing:.1em}
+  #vModo .chip{margin-left:0}
+  #vModo #mBody{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:auto minmax(0,1fr) auto;
     grid-template-areas:"lamps cronos" "reac rec" "reac btn";column-gap:14px}
+  #vModo.noBox #mBody{grid-template-rows:auto minmax(0,1fr) auto;grid-template-areas:"lamps rec" "reac rec" "reac btn"}
   .lamp{width:30px;height:30px}
   .lamps{padding:10px 10px 8px}
   .status{margin-top:6px}
   .num{font-size:min(12vw,24vh)}
   .num.to{font-size:min(7vw,14vh)}
   .cn{font-size:min(3.2vw,8vh)}
-  .m-reac .cn{font-size:min(4.5vw,9vh)}
+  .cols1 .cn,.cols2 .cn{font-size:min(4.5vw,9vh)}
   .pinL{display:inline}
   .recs{background:var(--panel);border:1px solid var(--edge);border-radius:16px;padding:10px 14px;overflow:hidden;min-height:0}
   .recs .ttl{display:block;margin-bottom:8px}
@@ -160,7 +178,7 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
 #log .tx{color:var(--amb)}
 
 /* ---------- Aviso flotante ---------- */
-#toast{position:fixed;left:50%;top:70px;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:12px;
+#toast{position:fixed;left:50%;top:100px;transform:translateX(-50%);max-width:92%;padding:10px 16px;border-radius:12px;
   background:#1a2430;border:1px solid #2a3846;font-size:14px;text-align:center;z-index:10;opacity:0;pointer-events:none;transition:opacity .2s}
 #toast.show{opacity:1}
 #toast.ok{color:var(--grn)} #toast.warn{color:var(--amb)} #toast.err{color:var(--red)}
@@ -170,14 +188,14 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
 
 <!-- Indicador de batería y Bluetooth (se copia en cada cabecera) -->
 <template id="chipTpl">
-  <div class="chip" aria-label="Batería del sensor y estado del Bluetooth">
+  <div class="chip" aria-label="Batería de la Base y estado del Bluetooth">
     <span class="dot bDot"></span><span class="mono bTxt na">-.--V</span>
     <span class="dot tDot"></span><span class="tTxt">BT</span>
   </div>
 </template>
 
 <!-- ================= INICIO ================= -->
-<div class="view on" id="vInicio">
+<div class="view scroll on" id="vInicio">
   <div class="hdr">
     <div class="title big">PARTIDOR</div>
     <div class="chipSlot"></div>
@@ -186,42 +204,53 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
     </button>
   </div>
 
-  <div class="intro">
-    <div class="lbl">Elegí el modo</div>
-    <h1>¿Cómo vas a usar el partidor?</h1>
+  <div id="iniOff" class="panel paso">
+    <div class="lbl">Paso 1 · Base</div>
+    <div class="pTxt">Encendé la Base y conectala. Sin Base no se puede largar.</div>
+    <button class="btn big blue" id="btnConectar">CONECTAR BASE</button>
   </div>
 
-  <button class="modeBtn reac" id="mReac" disabled>
-    <svg class="ic" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>
-    <span style="flex:1"><b>Partidor (Reacción)</b><small data-on="Advertencia, listo, ya, reacción y tiempo a los 10 m" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
-    <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-  </button>
-
-  <button class="modeBtn tiempo" id="mTiempo" disabled>
-    <svg class="ic" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/><path d="M12 2v3"/></svg>
-    <span style="flex:1"><b>Con toma de tiempo</b><small data-on="Reacción, 10 m, Crono 1 y Crono 2 del control RF" data-off="Necesita el sensor conectado">Necesita el sensor conectado</small></span>
-    <svg class="chev" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-  </button>
-
-  <div class="grow"></div>
-
-  <div id="iniOff" style="display:flex;flex-direction:column;gap:6px">
-    <div class="warnTxt">Conectá el sensor para elegir el modo</div>
-    <button class="btn big blue" id="btnConectar">CONECTAR SENSOR</button>
-    <button class="link" id="btnDemoIni">Probar en modo demo</button>
-  </div>
-
-  <div id="iniOn" class="panel hidden" style="padding:14px 16px;display:flex;align-items:center;gap:12px">
+  <div id="iniOn" class="panel hidden" style="padding:12px 14px;display:flex;align-items:center;gap:12px">
+    <span class="dot ok" style="width:14px;height:14px"></span>
     <div style="flex:1">
-      <div class="lbl">Sensor</div>
-      <div id="iniSensor" style="font-size:16px;color:var(--hi);margin-top:2px">APM · conectado</div>
+      <div class="lbl">Paso 1 · Base</div>
+      <div id="iniSensor" style="font-size:16px;color:var(--hi);margin-top:2px">Conectada · APM</div>
     </div>
     <button class="btn sm red" id="btnDescIni">Desconectar</button>
   </div>
+
+  <div class="paso2">
+    <div class="lbl">Paso 2 · ¿Qué vas a medir?</div>
+    <div class="p2 off" id="paso2">Conectá la Base primero</div>
+  </div>
+
+  <button class="modeBtn mo-reac" data-mode="reac" disabled>
+    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
+    <span style="flex:1;min-width:0"><b>Reacción</b><small>Tiempo de reacción</small><span class="eq">Base</span></span>
+    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+  <button class="modeBtn mo-crono" data-mode="crono" disabled>
+    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/><path d="M12 2v3"/></svg></span>
+    <span style="flex:1;min-width:0"><b>Cronometraje</b><small>Reacción + Crono 1 y Crono 2</small><span class="eq">Base · Transmisor</span></span>
+    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+  <button class="modeBtn mo-salida" data-mode="salida" disabled>
+    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M7 20V6h9l-2 3 2 3H7"/><path d="M17 20v-5"/></svg></span>
+    <span style="flex:1;min-width:0"><b>Salida 10 m</b><small>Reacción + tiempo a los 10 m</small><span class="eq">Base · Estación 10 m</span></span>
+    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+  <button class="modeBtn mo-completo" data-mode="completo" disabled>
+    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/><path d="m17 17 2 2 3-4"/></svg></span>
+    <span style="flex:1;min-width:0"><b>Completo</b><small>Reacción + 10 m + Crono 1 y Crono 2</small><span class="eq">Base · Transmisor · Estación 10 m</span></span>
+    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
+  </button>
+
+  <div class="grow"></div>
+  <button class="link" id="btnDemoIni">Probar en modo demo</button>
 </div>
 
-<!-- ================= LARGADA (los dos modos) ================= -->
-<div class="view m-reac" id="vModo">
+<!-- ================= LARGADA (los cuatro modos) ================= -->
+<div class="view noBox" id="vModo">
   <div class="hdr">
     <button class="ib" id="btnVolver" aria-label="Volver a elegir modo">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
@@ -250,7 +279,7 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
     </div>
 
     <div class="cronos a-cronos">
-      <div class="panel"><div class="lbl">10 m</div><div class="cn mono t10 none" id="t10">--.--</div></div>
+      <div class="panel p10"><div class="lbl">10 m</div><div class="cn mono t10 none" id="t10">--.--</div></div>
       <div class="panel soloT"><div class="lbl">Crono 1<span class="pinL"> · Pin 2</span></div><div class="cn mono none" id="c1">--.--</div></div>
       <div class="panel soloT"><div class="lbl">Crono 2<span class="pinL"> · Pin 3</span></div><div class="cn mono none" id="c2">--.--</div></div>
     </div>
@@ -326,7 +355,7 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
 
   <button class="btn" id="btnFullCfg">Pantalla completa</button>
   <button class="btn" id="btnCambiarModo">Cambiar modo</button>
-  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.2.1 (25/11/2026)</div>
+  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.3 (26/11/2026)</div>
 
   <div class="panel sec">
     <details>
@@ -368,12 +397,25 @@ function show(id){
   document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === id));
   S.view = id; window.scrollTo(0, 0); render();
 }
+/* Modos según los equipos que se llevan: la Base siempre; transmisor (cronos) y estación 10 m opcionales */
+const MODOS = {
+  reac:     { titulo: 'REACCIÓN',     t10: false, cr: false },
+  crono:    { titulo: 'CRONOMETRAJE', t10: false, cr: true  },
+  salida:   { titulo: 'SALIDA 10 M',  t10: true,  cr: false },
+  completo: { titulo: 'COMPLETO',     t10: true,  cr: true  }
+};
+const modo = () => MODOS[S.mode] || MODOS.reac;
 function openMode(m){
-  S.mode = m;
-  const v = $('vModo');
-  v.classList.toggle('m-reac', m === 'reac');
-  v.classList.toggle('m-tiempo', m === 'tiempo');
-  $('modoTitle').textContent = m === 'reac' ? 'REACCIÓN' : 'TOMA DE TIEMPO';
+  S.mode = MODOS[m] ? m : 'reac';
+  const M = modo(), v = $('vModo');
+  const cols = (M.t10 ? 1 : 0) + (M.cr ? 2 : 0);
+  v.className = 'view' + (S.view === 'vModo' ? ' on' : '');
+  v.classList.toggle('has10', M.t10);
+  v.classList.toggle('hasCr', M.cr);
+  v.classList.toggle('noBox', cols === 0);
+  if (cols) v.classList.add('cols' + cols);
+  $('modoTitle').textContent = M.titulo;
+  try { localStorage.setItem('partidor_modo', S.mode); } catch(_){}
   renderRecs(); show('vModo');
 }
 
@@ -404,14 +446,13 @@ function render(){
     ch.querySelector('.tTxt').textContent = demo ? 'DEMO' : 'BT';
   });
   // Inicio
-  ['mReac', 'mTiempo'].forEach(id => {
-    const b = $(id), sm = b.querySelector('small');
-    b.disabled = !S.conn;
-    sm.textContent = S.conn ? sm.dataset.on : sm.dataset.off;
-  });
+  document.querySelectorAll('.modeBtn').forEach(b => { b.disabled = !S.conn; });
+  const p2 = $('paso2');
+  p2.textContent = S.conn ? 'Elegí según los equipos que trajiste' : 'Conectá la Base primero';
+  p2.className = 'p2' + (S.conn ? '' : ' off');
   $('iniOff').classList.toggle('hidden', S.conn);
   $('iniOn').classList.toggle('hidden', !S.conn);
-  $('iniSensor').textContent = demo ? 'Modo demo (simulado)' : 'APM · ' + (S.fw || 'conectado');
+  $('iniSensor').textContent = demo ? 'Modo demo (simulado)' : 'Conectada · APM';
   // Configuración
   $('cDot').className = 'dot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
   $('cTxt').textContent = demo ? 'Modo demo' : (S.conn ? 'APM · conectado' : 'Desconectado');
@@ -506,6 +547,7 @@ function resultCrono(n, ms){
   setCrono(n, fmtCrono(ms), '');
   if (n === 1) c1run = false; else c2run = false;
   ensureRec()['c' + n] = ms; saveHist(); renderRecs();
+  if (S.view === 'vModo' && !modo().cr) toast('Llegó el Crono ' + n + ' (este modo no lo muestra; queda en el historial)', 'warn');
 }
 /* Tiempo a los 10 m (estación de la cámara, llega 4 a 6 s después del YA).
    Si ya empezó otra largada y todavía no hubo YA, es de la largada anterior. */
@@ -514,6 +556,7 @@ function result10(ms){
   if (!r){ log('(10 m sin largada: ' + ms + ' ms)'); return; }
   r.t10 = ms;
   if (r === rec) setT10(fmtCrono(ms), '');
+  if (S.view === 'vModo' && !modo().t10) toast('Llegó un tiempo de 10 m (este modo no lo muestra; queda en el historial)', 'warn');
   try { navigator.vibrate && navigator.vibrate(40); } catch(_){}
   saveHist(); renderRecs();
 }
@@ -528,7 +571,7 @@ function tick(){
   }
   // Si el Uno no responde, no dejar el botón trabado en "EN CURSO"
   if (BUSY.includes(S.phase) && Date.now() - S.lastEvt > 30000){
-    running = false; lamps(null); $('status').textContent = 'Sin respuesta del sensor'; setPhase('idle');
+    running = false; lamps(null); $('status').textContent = 'Sin respuesta de la Base'; setPhase('idle');
   }
   renderGo();
   requestAnimationFrame(tick);
@@ -543,22 +586,24 @@ function loadHist(){
 function renderRecs(){
   const box = $('recs'); box.innerHTML = '';
   const t = document.createElement('div'); t.className = 'lbl ttl'; t.textContent = 'Últimas largadas'; box.appendChild(t);
-  const tiempo = S.mode === 'tiempo';
+  const M = modo();
+  // columnas según el modo: [título, valor]
+  const C = [['Hora', h => new Date(h.hora).toTimeString().slice(0, 8)]];
+  if (!M.cr) C.push(['Espera', h => h.espera == null ? '—' : h.espera.toFixed(1) + ' s']);
+  C.push([M.cr && M.t10 ? 'Reac.' : 'Reacción', h => fmtCell(h.reac, fmtReac)]);
+  if (M.t10) C.push(['10 m', h => fmtCell(h.t10, fmtCrono)]);
+  if (M.cr) { C.push(['Crono 1', h => fmtCell(h.c1, fmtCrono)]); C.push(['Crono 2', h => fmtCell(h.c2, fmtCrono)]); }
+  const plantilla = C.length >= 4 ? '1.1fr repeat(' + (C.length - 1) + ',minmax(0,1fr))' : 'repeat(' + C.length + ',minmax(0,1fr))';
   const row = (cells, cls) => {
-    const r = document.createElement('div'); r.className = 'r ' + (cls || '');
+    const r = document.createElement('div'); r.className = 'r ' + (cls || '') + (C.length >= 5 ? ' c5' : '');
+    r.style.gridTemplateColumns = plantilla;
     cells.forEach(c => { const s = document.createElement('span'); s.textContent = c; r.appendChild(s); });
     box.appendChild(r);
   };
-  row(tiempo ? ['Hora', 'Reac.', '10 m', 'Crono 1', 'Crono 2'] : ['Hora', 'Espera', 'Reacción', '10 m'], 'h');
+  row(C.map(c => c[0]), 'h');
   const done = hist.filter(h => h.reac != null).slice(0, 3);
   if (!done.length){ const e = document.createElement('div'); e.className = 'empty'; e.textContent = 'Todavía no hay largadas'; box.appendChild(e); }
-  done.forEach((h, i) => {
-    const hora = new Date(h.hora).toTimeString().slice(0, 8);
-    row(tiempo
-      ? [hora, fmtCell(h.reac, fmtReac), fmtCell(h.t10, fmtCrono), fmtCell(h.c1, fmtCrono), fmtCell(h.c2, fmtCrono)]
-      : [hora, h.espera == null ? '—' : h.espera.toFixed(1) + ' s', fmtCell(h.reac, fmtReac), fmtCell(h.t10, fmtCrono)],
-      i === 0 ? 'first' : '');
-  });
+  done.forEach((h, i) => row(C.map(c => c[1](h)), i === 0 ? 'first' : ''));
   const first = box.querySelector('.r.first'); if (first) first.style.borderTop = 'none';
   renderHist();
 }
@@ -629,7 +674,7 @@ function parseLine(l){
   if ((m = s.match(/Bater.a(?: baja| cr.tica)?\s*:\s*([\d.]+)\s*V/i))) {
     S.bat = parseFloat(m[1]); S.batAlert = /ALERTA/i.test(s);
     $('iBat').textContent = S.bat.toFixed(2) + ' V';
-    if (S.batAlert) toast('¡Batería baja del sensor! (' + m[1] + ' V)', 'err');
+    if (S.batAlert) toast('¡Batería baja de la Base! (' + m[1] + ' V)', 'err');
     render(); return;
   }
   if ((m = s.match(/Firmware:\s*(.+)/))) { S.fw = m[1]; $('iFw').textContent = m[1]; render(); return; }
@@ -680,7 +725,7 @@ async function connect(elegir){
     catch (e) { if (e.name !== 'InvalidStateError') throw e; }
     port = p;
     writer = port.writable.getWriter();
-    S.conn = true; render(); toast('Sensor conectado', 'ok'); log('— conectado —');
+    S.conn = true; render(); toast('Base conectada', 'ok'); log('— conectado —');
     loopPromise = readLoop();
     keepAwake();
     setTimeout(() => send('i'), 500);                  // pide umbral, advertencia y batería
@@ -725,7 +770,7 @@ async function disconnect(motivo, desdeLoop){
 async function send(cmd){
   log('› ' + cmd, 'tx');
   if (demo){ fakeUno(cmd); return; }
-  if (!writer){ toast('Sin conexión con el sensor', 'warn'); return; }
+  if (!writer){ toast('Sin conexión con la Base', 'warn'); return; }
   try { await writer.write(enc.encode(cmd + '\r\n')); }
   catch (e) { toast('Error al enviar: ' + e.message, 'err'); }
 }
@@ -782,7 +827,7 @@ async function startDemo(){
   if (port) await disconnect();
   demo = true; S.conn = true;
   feed('Firmware: demo (simulado)\r\n'); fakeUno('i'); keepAwake(); render();
-  toast('Modo demo: simula el sensor, no usa Bluetooth', 'warn');
+  toast('Modo demo: simula la Base, no usa Bluetooth', 'warn');
 }
 function stopDemo(){
   fu.timers.forEach(clearTimeout); fu.timers = []; fu.busy = false;
@@ -812,8 +857,7 @@ document.addEventListener('webkitfullscreenchange', renderFull);
 /* ---------------- Botones ---------------- */
 document.querySelectorAll('.chipSlot').forEach(slot => slot.replaceWith($('chipTpl').content.cloneNode(true)));
 
-$('mReac').onclick = () => { if (S.conn) { goFull(); openMode('reac'); } };
-$('mTiempo').onclick = () => { if (S.conn) { goFull(); openMode('tiempo'); } };
+document.querySelectorAll('.modeBtn').forEach(b => b.onclick = () => { if (S.conn) { goFull(); openMode(b.dataset.mode); } });
 $('btnConectar').onclick = () => connect(false);
 $('btnDemoIni').onclick = () => startDemo();
 $('btnDescIni').onclick = () => { if (demo) stopDemo(); else disconnect(); };
