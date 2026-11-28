@@ -87,7 +87,8 @@ button{font-family:inherit}
 .go:active{transform:scale(.98)}
 .go.busy{background:#161d26;border-color:#2a3846;color:var(--lbl)}
 .go.wait{background:#3a2c10;border-color:#7a5a1f;color:#ffd98a}
-.go.off{background:#161d26;border-color:#2a3846;color:var(--lbl)}
+.go.off{background:#13314a;border-color:#22557c;color:#dcefff}
+.go.busy.conn{color:var(--amb)}
 
 /* ---------- Pantalla de largada ---------- */
 #mBody{flex:1;min-height:0;display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
@@ -194,68 +195,13 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
   </div>
 </template>
 
-<!-- ================= INICIO ================= -->
-<div class="view scroll on" id="vInicio">
+<!-- ================= LARGADA (siempre modo Completo) ================= -->
+<div class="view on has10 hasCr cols3" id="vModo">
   <div class="hdr">
-    <div class="title big">PARTIDOR</div>
-    <div class="chipSlot"></div>
     <button class="ib" id="btnFull" aria-label="Pantalla completa">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></svg>
     </button>
-  </div>
-
-  <div id="iniOff" class="panel paso">
-    <div class="lbl">Paso 1 · Base</div>
-    <div class="pTxt">Encendé la Base y conectala. Sin Base no se puede largar.</div>
-    <button class="btn big blue" id="btnConectar">CONECTAR BASE</button>
-  </div>
-
-  <div id="iniOn" class="panel hidden" style="padding:12px 14px;display:flex;align-items:center;gap:12px">
-    <span class="dot ok" style="width:14px;height:14px"></span>
-    <div style="flex:1">
-      <div class="lbl">Paso 1 · Base</div>
-      <div id="iniSensor" style="font-size:16px;color:var(--hi);margin-top:2px">Conectada · APM</div>
-    </div>
-    <button class="btn sm red" id="btnDescIni">Desconectar</button>
-  </div>
-
-  <div class="paso2">
-    <div class="lbl">Paso 2 · ¿Qué vas a medir?</div>
-    <div class="p2 off" id="paso2">Conectá la Base primero</div>
-  </div>
-
-  <button class="modeBtn mo-reac" data-mode="reac" disabled>
-    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></span>
-    <span style="flex:1;min-width:0"><b>Reacción</b><small>Tiempo de reacción</small><span class="eq">Base</span></span>
-    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-  </button>
-  <button class="modeBtn mo-crono" data-mode="crono" disabled>
-    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M10 2h4"/><path d="M12 2v3"/></svg></span>
-    <span style="flex:1;min-width:0"><b>Cronometraje</b><small>Reacción + Crono 1 y Crono 2</small><span class="eq">Base · Transmisor</span></span>
-    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-  </button>
-  <button class="modeBtn mo-salida" data-mode="salida" disabled>
-    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 20h18"/><path d="M7 20V6h9l-2 3 2 3H7"/><path d="M17 20v-5"/></svg></span>
-    <span style="flex:1;min-width:0"><b>Salida 10 m</b><small>Reacción + tiempo a los 10 m</small><span class="eq">Base · Estación 10 m</span></span>
-    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-  </button>
-  <button class="modeBtn mo-completo" data-mode="completo" disabled>
-    <span class="icb"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h16"/><path d="M4 12h16"/><path d="M4 18h10"/><path d="m17 17 2 2 3-4"/></svg></span>
-    <span style="flex:1;min-width:0"><b>Completo</b><small>Reacción + 10 m + Crono 1 y Crono 2</small><span class="eq">Base · Transmisor · Estación 10 m</span></span>
-    <svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 6 6 6-6 6"/></svg>
-  </button>
-
-  <div class="grow"></div>
-  <button class="link" id="btnDemoIni">Probar en modo demo</button>
-</div>
-
-<!-- ================= LARGADA (los cuatro modos) ================= -->
-<div class="view noBox" id="vModo">
-  <div class="hdr">
-    <button class="ib" id="btnVolver" aria-label="Volver a elegir modo">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 6-6 6 6 6"/></svg>
-    </button>
-    <div class="title" id="modoTitle">REACCIÓN</div>
+    <div class="title" id="modoTitle">PARTIDOR</div>
     <div class="chipSlot"></div>
     <button class="ib" id="btnCfg" aria-label="Configuración">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
@@ -354,8 +300,7 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
   </div>
 
   <button class="btn" id="btnFullCfg">Pantalla completa</button>
-  <button class="btn" id="btnCambiarModo">Cambiar modo</button>
-  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.3 (26/11/2026)</div>
+  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.4 (28/11/2026)</div>
 
   <div class="panel sec">
     <details>
@@ -388,7 +333,7 @@ let port = null, reader = null, writer = null, reading = false, loopPromise = nu
 let demo = false;
 
 const S = {
-  conn: false, view: 'vInicio', mode: null, phase: 'idle',
+  conn: false, view: 'vModo', mode: 'completo', phase: 'idle',
   refrUntil: 0, lastEvt: 0, bat: null, batAlert: false, fw: null
 };
 
@@ -402,7 +347,7 @@ const MODOS = {
   reac:     { titulo: 'REACCIÓN',     t10: false, cr: false },
   crono:    { titulo: 'CRONOMETRAJE', t10: false, cr: true  },
   salida:   { titulo: 'SALIDA 10 M',  t10: true,  cr: false },
-  completo: { titulo: 'COMPLETO',     t10: true,  cr: true  }
+  completo: { titulo: 'PARTIDOR',     t10: true,  cr: true  }
 };
 const modo = () => MODOS[S.mode] || MODOS.reac;
 function openMode(m){
@@ -415,7 +360,6 @@ function openMode(m){
   v.classList.toggle('noBox', cols === 0);
   if (cols) v.classList.add('cols' + cols);
   $('modoTitle').textContent = M.titulo;
-  try { localStorage.setItem('partidor_modo', S.mode); } catch(_){}
   renderRecs(); show('vModo');
 }
 
@@ -445,17 +389,9 @@ function render(){
     ch.querySelector('.tDot').className = 'dot tDot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
     ch.querySelector('.tTxt').textContent = demo ? 'DEMO' : 'BT';
   });
-  // Inicio
-  document.querySelectorAll('.modeBtn').forEach(b => { b.disabled = !S.conn; });
-  const p2 = $('paso2');
-  p2.textContent = S.conn ? 'Elegí según los equipos que trajiste' : 'Conectá la Base primero';
-  p2.className = 'p2' + (S.conn ? '' : ' off');
-  $('iniOff').classList.toggle('hidden', S.conn);
-  $('iniOn').classList.toggle('hidden', !S.conn);
-  $('iniSensor').textContent = demo ? 'Modo demo (simulado)' : 'Conectada · APM';
   // Configuración
   $('cDot').className = 'dot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
-  $('cTxt').textContent = demo ? 'Modo demo' : (S.conn ? 'APM · conectado' : 'Desconectado');
+  $('cTxt').textContent = demo ? 'Modo demo' : (S.conn ? 'APM · conectado' : (conectando ? 'Buscando la Base…' : 'Desconectado'));
   const cb = $('cBtn');
   cb.textContent = S.conn ? (demo ? 'Salir del demo' : 'Desconectar') : 'Conectar';
   cb.className = 'btn ' + (S.conn ? 'red' : 'blue');
@@ -468,7 +404,8 @@ let goKey = '';
 function renderGo(){
   const now = Date.now();
   let txt = 'LARGADA', cls = 'go a-btn', dis = false;
-  if (!S.conn) { txt = 'SIN CONEXIÓN'; cls += ' off'; }
+  if (!S.conn && conectando) { txt = 'CONECTANDO…'; cls += ' busy conn'; dis = true; }
+  else if (!S.conn) { txt = 'CONECTAR BASE'; cls += ' off'; }
   else if (BUSY.includes(S.phase)) { txt = 'EN CURSO…'; cls += ' busy'; dis = true; }
   else if (now < S.refrUntil) { txt = 'ESPERÁ ' + Math.ceil((S.refrUntil - now) / 1000) + ' s'; cls += ' wait'; dis = true; }
   const key = txt + cls + dis;
@@ -697,8 +634,29 @@ function parseLine(l){
 }
 
 /* ---------------- Bluetooth (Web Serial) ---------------- */
-async function connect(elegir){
+/* Conexión automática: al abrir la app (y si se corta) intenta conectarse sola
+   a la Base que ya se eligió antes en este navegador. La primera vez hay que
+   tocar CONECTAR BASE y elegir "APM" (Chrome no deja elegir el equipo sin un toque). */
+let conectando = false, autoT = null, manualOff = false;
+function programarAuto(ms){
+  clearTimeout(autoT);
+  if (demo || S.conn || manualOff) return;
+  autoT = setTimeout(autoConectar, ms);
+}
+async function autoConectar(){
+  if (demo || S.conn || conectando || manualOff || !('serial' in navigator)) return;
+  if (document.visibilityState !== 'visible') { programarAuto(3000); return; }
+  let ps = [];
+  try { ps = await navigator.serial.getPorts(); } catch(_){}
+  if (!ps.length){ render(); return; }                 // nunca se eligió: espera el toque en CONECTAR BASE
+  await connect(false, true);
+  if (!S.conn) programarAuto(5000);                    // Base apagada o lejos: reintenta cada 5 s
+}
+
+async function connect(elegir, silencioso){
   if (demo) stopDemo();
+  if (conectando) return;
+  manualOff = false;
   if (!('serial' in navigator)){
     toast(isSecureContext
       ? 'Este navegador no puede usar Bluetooth serie. Usá Chrome para Android 138 o más nuevo.'
@@ -720,19 +678,22 @@ async function connect(elegir){
         p = await navigator.serial.requestPort();
       }
     }
-    toast('Conectando…', 'warn');
+    conectando = true; render();
+    if (!silencioso) toast('Conectando…', 'warn');
     try { await p.open({ baudRate: BAUD }); }
     catch (e) { if (e.name !== 'InvalidStateError') throw e; }
     port = p;
     writer = port.writable.getWriter();
+    conectando = false; clearTimeout(autoT);
     S.conn = true; render(); toast('Base conectada', 'ok'); log('— conectado —');
     loopPromise = readLoop();
     keepAwake();
     setTimeout(() => send('i'), 500);                  // pide umbral, advertencia y batería
   } catch (e) {
-    port = null; writer = null; S.conn = false; render();
-    toast('No se pudo conectar: ' + e.message + ' (¿está cerrada la app de terminal?)', 'err');
+    conectando = false; port = null; writer = null; S.conn = false; render();
+    if (!silencioso) toast('No se pudo conectar: ' + e.message + ' (¿está encendida la Base? ¿cerraste la app de terminal?)', 'err');
     log('! ' + e.name + ': ' + e.message);
+    if (!silencioso) programarAuto(5000);
   }
 }
 async function readLoop(){
@@ -766,6 +727,7 @@ async function disconnect(motivo, desdeLoop){
   log('— desconectado —');
   if (motivo) toast(motivo, 'warn');
   releaseAwake();
+  if (desdeLoop) programarAuto(2000);                  // se cortó solo: vuelve a buscar la Base
 }
 async function send(cmd){
   log('› ' + cmd, 'tx');
@@ -780,7 +742,8 @@ let wl = null;
 async function keepAwake(){ try { if ('wakeLock' in navigator) wl = await navigator.wakeLock.request('screen'); } catch(_){} }
 function releaseAwake(){ try { wl && wl.release(); } catch(_){} wl = null; }
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible' && S.conn) keepAwake();
+  if (document.visibilityState !== 'visible') return;
+  if (S.conn) keepAwake(); else programarAuto(300);
 });
 
 /* ---------------- Modo demo (simula el Uno, sin hardware) ---------------- */
@@ -833,6 +796,7 @@ function stopDemo(){
   fu.timers.forEach(clearTimeout); fu.timers = []; fu.busy = false;
   demo = false; S.conn = false; S.bat = null; S.fw = null; $('iFw').textContent = '—';
   resetLargada(); releaseAwake(); render();
+  programarAuto(500);
 }
 
 
@@ -857,28 +821,21 @@ document.addEventListener('webkitfullscreenchange', renderFull);
 /* ---------------- Botones ---------------- */
 document.querySelectorAll('.chipSlot').forEach(slot => slot.replaceWith($('chipTpl').content.cloneNode(true)));
 
-document.querySelectorAll('.modeBtn').forEach(b => b.onclick = () => { if (S.conn) { goFull(); openMode(b.dataset.mode); } });
-$('btnConectar').onclick = () => connect(false);
-$('btnDemoIni').onclick = () => startDemo();
-$('btnDescIni').onclick = () => { if (demo) stopDemo(); else disconnect(); };
-
-$('btnVolver').onclick = () => show('vInicio');
 $('btnCfg').onclick = () => show('vConfig');
 let lastGo = 0;
 $('btnGo').onclick = () => {
-  if (!S.conn){ connect(false); return; }               // "SIN CONEXIÓN": tocar para reconectar
+  if (!S.conn){ goFull(); connect(false); return; }    // "CONECTAR BASE"
   const now = Date.now();
   if (now - lastGo < 800) return;                       // evita doble toque
-  lastGo = now; send('*');
+  lastGo = now; goFull(); send('*');
 };
 
-$('btnCfgVolver').onclick = () => show(S.mode ? 'vModo' : 'vInicio');
+$('btnCfgVolver').onclick = () => show('vModo');
 $('btnCal').onclick = () => { $('calMsg').textContent = 'Calibrando…'; $('calMsg').className = ''; send('c'); };
 $('btnInfo').onclick = () => send('i');
 document.querySelectorAll('[data-cmd]').forEach(b => b.onclick = () => send(b.dataset.cmd));
-$('cBtn').onclick = () => { if (demo) stopDemo(); else if (S.conn) disconnect(); else connect(false); };
+$('cBtn').onclick = () => { if (demo) stopDemo(); else if (S.conn) { manualOff = true; clearTimeout(autoT); disconnect(); } else connect(false); };
 $('btnOtro').onclick = async () => { if (demo) stopDemo(); if (port) await disconnect(); connect(true); };
-$('btnCambiarModo').onclick = () => show('vInicio');
 $('btnFull').onclick = toggleFull;
 $('btnFullCfg').onclick = toggleFull;
 $('btnDemo').onclick = () => { if (demo) stopDemo(); else startDemo(); };
@@ -891,7 +848,8 @@ $('btnClear').onclick = () => {
   hist = []; rec = null; saveHist(); renderRecs();
 };
 
-loadHist(); renderRecs(); render();
+loadHist(); openMode('completo');
+autoConectar();                                         // al abrir, busca la Base sola
 
 /* Guardar la app en el celular para usarla sin internet (solo cuando se abre desde la web) */
 if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost')){
