@@ -89,6 +89,8 @@ button{font-family:inherit}
 .go.wait{background:#3a2c10;border-color:#7a5a1f;color:#ffd98a}
 .go.off{background:#13314a;border-color:#22557c;color:#dcefff}
 .go.busy.conn{color:var(--amb)}
+/* Instalada como app ya está en pantalla completa: no hace falta el botón */
+@media (display-mode: fullscreen), (display-mode: standalone){ .btnFull, #btnFullCfg{display:none!important} }
 
 /* ---------- Pantalla de largada ---------- */
 #mBody{flex:1;min-height:0;display:grid;gap:10px;grid-template-columns:minmax(0,1fr)}
@@ -195,10 +197,30 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
   </div>
 </template>
 
-<!-- ================= LARGADA (siempre modo Completo) ================= -->
-<div class="view on has10 hasCr cols3" id="vModo">
+<!-- ================= CONECTAR (al abrir la app) ================= -->
+<div class="view scroll on" id="vInicio">
   <div class="hdr">
-    <button class="ib" id="btnFull" aria-label="Pantalla completa">
+    <div class="title big">PARTIDOR</div>
+    <div class="chipSlot"></div>
+    <button class="ib btnFull" aria-label="Pantalla completa">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></svg>
+    </button>
+  </div>
+  <div class="grow"></div>
+  <div class="panel paso">
+    <div class="lbl">Base</div>
+    <div class="pTxt">Encendé la Base y tocá <b>CONECTAR BASE</b>. Cuando se conecte, pasa sola a la pantalla de largada.</div>
+    <button class="btn big blue" id="btnConectar">CONECTAR BASE</button>
+    <div class="warnTxt" id="iniEstado"></div>
+  </div>
+  <div class="grow"></div>
+  <button class="link" id="btnDemoIni">Probar en modo demo</button>
+</div>
+
+<!-- ================= LARGADA (modo Completo) ================= -->
+<div class="view has10 hasCr cols3" id="vModo">
+  <div class="hdr">
+    <button class="ib btnFull" aria-label="Pantalla completa">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5"/><path d="M20 9V4h-5"/><path d="M4 15v5h5"/><path d="M20 15v5h-5"/></svg>
     </button>
     <div class="title" id="modoTitle">PARTIDOR</div>
@@ -300,7 +322,7 @@ td.c{color:var(--cyan)} td.g{color:var(--grn)}
   </div>
 
   <button class="btn" id="btnFullCfg">Pantalla completa</button>
-  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.4 (28/11/2026)</div>
+  <div style="text-align:center;font-size:12px;color:var(--lbl);padding:4px 0 8px">Partidor · versión 2.5 (28/11/2026)</div>
 
   <div class="panel sec">
     <details>
@@ -333,7 +355,7 @@ let port = null, reader = null, writer = null, reading = false, loopPromise = nu
 let demo = false;
 
 const S = {
-  conn: false, view: 'vModo', mode: 'completo', phase: 'idle',
+  conn: false, view: 'vInicio', mode: 'completo', phase: 'idle',
   refrUntil: 0, lastEvt: 0, bat: null, batAlert: false, fw: null
 };
 
@@ -389,6 +411,12 @@ function render(){
     ch.querySelector('.tDot').className = 'dot tDot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
     ch.querySelector('.tTxt').textContent = demo ? 'DEMO' : 'BT';
   });
+  // Pantalla de conexión
+  const ie = $('iniEstado');
+  ie.textContent = conectando ? 'Buscando la Base…' : (S.conn ? '' : (falloConexion ? 'No se encontró la Base. ¿Está encendida y cerca?' : ''));
+  const bc = $('btnConectar');
+  bc.textContent = conectando ? 'CONECTANDO…' : 'CONECTAR BASE';
+  bc.disabled = conectando;
   // Configuración
   $('cDot').className = 'dot ' + (demo ? 'demo' : (S.conn ? 'ok' : 'bad'));
   $('cTxt').textContent = demo ? 'Modo demo' : (S.conn ? 'APM · conectado' : (conectando ? 'Buscando la Base…' : 'Desconectado'));
@@ -637,7 +665,7 @@ function parseLine(l){
 /* Conexión automática: al abrir la app (y si se corta) intenta conectarse sola
    a la Base que ya se eligió antes en este navegador. La primera vez hay que
    tocar CONECTAR BASE y elegir "APM" (Chrome no deja elegir el equipo sin un toque). */
-let conectando = false, autoT = null, manualOff = false;
+let conectando = false, autoT = null, manualOff = false, falloConexion = false;
 function programarAuto(ms){
   clearTimeout(autoT);
   if (demo || S.conn || manualOff) return;
@@ -685,12 +713,13 @@ async function connect(elegir, silencioso){
     port = p;
     writer = port.writable.getWriter();
     conectando = false; clearTimeout(autoT);
-    S.conn = true; render(); toast('Base conectada', 'ok'); log('— conectado —');
+    S.conn = true; falloConexion = false; render(); toast('Base conectada', 'ok'); log('— conectado —');
+    if (S.view === 'vInicio') show('vModo');          // conectada: pasa sola a la largada
     loopPromise = readLoop();
     keepAwake();
     setTimeout(() => send('i'), 500);                  // pide umbral, advertencia y batería
   } catch (e) {
-    conectando = false; port = null; writer = null; S.conn = false; render();
+    conectando = false; falloConexion = true; port = null; writer = null; S.conn = false; render();
     if (!silencioso) toast('No se pudo conectar: ' + e.message + ' (¿está encendida la Base? ¿cerraste la app de terminal?)', 'err');
     log('! ' + e.name + ': ' + e.message);
     if (!silencioso) programarAuto(5000);
@@ -790,6 +819,7 @@ async function startDemo(){
   if (port) await disconnect();
   demo = true; S.conn = true;
   feed('Firmware: demo (simulado)\r\n'); fakeUno('i'); keepAwake(); render();
+  if (S.view === 'vInicio') show('vModo');
   toast('Modo demo: simula la Base, no usa Bluetooth', 'warn');
 }
 function stopDemo(){
@@ -824,10 +854,10 @@ document.querySelectorAll('.chipSlot').forEach(slot => slot.replaceWith($('chipT
 $('btnCfg').onclick = () => show('vConfig');
 let lastGo = 0;
 $('btnGo').onclick = () => {
-  if (!S.conn){ goFull(); connect(false); return; }    // "CONECTAR BASE"
+  if (!S.conn){ connect(false); return; }              // "CONECTAR BASE"
   const now = Date.now();
   if (now - lastGo < 800) return;                       // evita doble toque
-  lastGo = now; goFull(); send('*');
+  lastGo = now; send('*');
 };
 
 $('btnCfgVolver').onclick = () => show('vModo');
@@ -836,7 +866,9 @@ $('btnInfo').onclick = () => send('i');
 document.querySelectorAll('[data-cmd]').forEach(b => b.onclick = () => send(b.dataset.cmd));
 $('cBtn').onclick = () => { if (demo) stopDemo(); else if (S.conn) { manualOff = true; clearTimeout(autoT); disconnect(); } else connect(false); };
 $('btnOtro').onclick = async () => { if (demo) stopDemo(); if (port) await disconnect(); connect(true); };
-$('btnFull').onclick = toggleFull;
+document.querySelectorAll('.btnFull').forEach(b => b.onclick = toggleFull);
+$('btnConectar').onclick = () => connect(false);
+$('btnDemoIni').onclick = () => startDemo();
 $('btnFullCfg').onclick = toggleFull;
 $('btnDemo').onclick = () => { if (demo) stopDemo(); else startDemo(); };
 $('btnCopy').onclick = async () => {
@@ -848,7 +880,7 @@ $('btnClear').onclick = () => {
   hist = []; rec = null; saveHist(); renderRecs();
 };
 
-loadHist(); openMode('completo');
+loadHist(); openMode('completo'); show('vInicio');
 autoConectar();                                         // al abrir, busca la Base sola
 
 /* Guardar la app en el celular para usarla sin internet (solo cuando se abre desde la web) */
